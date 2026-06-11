@@ -1,0 +1,12 @@
+# Fichiers personnels de l'animateur — ne jamais publier
+Code capsule.txt
+Formation Avenirs.url
+Formation Parcours Avenir/
+*.url
+
+# Fichiers temporaires
+_*.py
+_*.txt
+_*.pdf
+_*.png
+!logo-college.png

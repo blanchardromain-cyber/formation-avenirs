@@ -1,0 +1,1756 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formation Avenir(s) — Capsule interactive</title>
+<meta name="description" content="Capsule de formation interactive pour les enseignants : découvrir et utiliser la plateforme d'orientation Avenir(s) (ONISEP).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Source+Sans+3:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+<style>
+/* ===================== VARIABLES & BASE ===================== */
+:root{
+  --ink:#22223d;
+  --ink-soft:#52527a;
+  --bg:#f5f4fb;
+  --card:#ffffff;
+  --violet:#4f3d99;        /* couleur principale, esprit Avenir(s) */
+  --violet-dark:#3a2c78;
+  --violet-soft:#ece9f9;
+  --accent:#c2185b;        /* accent magenta, esprit Onisep */
+  --teal:#0e7c6b;          /* 5e */
+  --teal-soft:#e2f3f0;
+  --amber:#a35a00;         /* 4e */
+  --amber-soft:#fdf0de;
+  --plum:#7b2d8b;          /* 3e */
+  --plum-soft:#f6e9f8;
+  --ok:#1d7a3c;
+  --err:#b3261e;
+  --radius:14px;
+  --shadow:0 2px 6px rgba(34,34,61,.06),0 12px 32px rgba(34,34,61,.08);
+  --font-title:"Outfit",system-ui,sans-serif;
+  --font-body:"Source Sans 3",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;font-family:var(--font-body);color:var(--ink);
+  background:var(--bg);font-size:17px;line-height:1.55;
+}
+h1,h2,h3,h4{font-family:var(--font-title);line-height:1.2;color:var(--ink)}
+a{color:var(--violet)}
+a:hover{color:var(--violet-dark)}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:4px}
+.visually-hidden{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+
+/* ===================== EN-TÊTE ===================== */
+header.app-header{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(100deg,var(--violet-dark),var(--violet) 60%,#6a55b8);
+  color:#fff;box-shadow:var(--shadow);
+}
+.header-inner{
+  max-width:1180px;margin:0 auto;padding:.65rem 1.2rem;
+  display:flex;align-items:center;gap:1rem;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:.7rem;min-width:0}
+.brand-mark{
+  width:42px;height:42px;border-radius:12px;flex:none;
+  background:radial-gradient(circle at 30% 30%,#ffd166,var(--accent));
+  display:grid;place-items:center;font-family:var(--font-title);
+  font-weight:800;font-size:1.05rem;color:#fff;letter-spacing:-.5px;
+}
+.brand-logo{
+  background:#fff;border-radius:12px;padding:5px 9px;flex:none;
+  display:grid;place-items:center;height:48px;
+}
+.brand-logo img{height:38px;width:auto;display:block}
+.brand h1{font-size:1.12rem;margin:0;color:#fff;font-weight:700}
+.brand p{margin:0;font-size:.8rem;opacity:.85;color:#fff}
+.header-actions{margin-left:auto;display:flex;gap:.5rem;align-items:center}
+.btn-ghost{
+  background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.35);
+  border-radius:10px;padding:.42rem .8rem;font-weight:600;font-size:.88rem;
+  transition:background .2s;
+}
+.btn-ghost:hover{background:rgba(255,255,255,.25)}
+.progress-track{height:5px;background:rgba(255,255,255,.22)}
+.progress-fill{
+  height:100%;width:12.5%;background:linear-gradient(90deg,#ffd166,#ff8fab);
+  transition:width .4s ease;border-radius:0 3px 3px 0;
+}
+
+/* ===================== NAVIGATION PAR ÉTAPES ===================== */
+nav.stepper{max-width:1180px;margin:1.1rem auto 0;padding:0 1.2rem}
+.stepper ol{
+  list-style:none;display:flex;gap:.4rem;margin:0;padding:0;flex-wrap:wrap;
+}
+.stepper button{
+  border:2px solid transparent;background:var(--card);border-radius:999px;
+  padding:.34rem .85rem;font-size:.84rem;font-weight:600;color:var(--ink-soft);
+  box-shadow:0 1px 3px rgba(34,34,61,.08);transition:all .2s;
+}
+.stepper button:hover{color:var(--violet);border-color:var(--violet-soft)}
+.stepper button[aria-current="step"]{
+  background:var(--violet);color:#fff;border-color:var(--violet);
+}
+.stepper .done::before{content:"✓ ";color:var(--ok)}
+.stepper button[aria-current="step"].done::before{color:#b5f0c6}
+
+/* ===================== SECTIONS / ÉTAPES ===================== */
+main{max-width:1180px;margin:0 auto;padding:1.2rem 1.2rem 4rem}
+section.step{display:none;animation:fadeUp .35s ease}
+section.step.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.step-head{margin:1rem 0 1.4rem}
+.step-kicker{
+  display:inline-block;font-family:var(--font-title);font-weight:700;
+  font-size:.78rem;text-transform:uppercase;letter-spacing:.12em;
+  color:var(--accent);background:#fbe7f0;border-radius:999px;padding:.22rem .8rem;
+}
+.step-head h2{font-size:clamp(1.5rem,3.2vw,2.15rem);margin:.55rem 0 .25rem}
+.step-head p.lead{font-size:1.06rem;color:var(--ink-soft);max-width:62ch;margin:.2rem 0 0}
+
+.card{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:1.35rem 1.5rem;margin-bottom:1.2rem;
+}
+.card h3{margin-top:0}
+
+.nav-bottom{
+  display:flex;justify-content:space-between;gap:1rem;margin-top:1.8rem;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:.5rem;border:none;border-radius:11px;
+  padding:.62rem 1.25rem;font-weight:700;font-family:var(--font-title);
+  font-size:.95rem;transition:transform .15s,box-shadow .15s,background .2s;
+}
+.btn:hover{transform:translateY(-1px)}
+.btn:active{transform:translateY(0)}
+.btn-primary{background:var(--violet);color:#fff;box-shadow:0 4px 14px rgba(79,61,153,.35)}
+.btn-primary:hover{background:var(--violet-dark)}
+.btn-secondary{background:var(--violet-soft);color:var(--violet-dark)}
+.btn-secondary:hover{background:#ddd7f3}
+.btn-accent{background:var(--accent);color:#fff;box-shadow:0 4px 14px rgba(194,24,91,.3)}
+.btn-accent:hover{background:#9c124a}
+.btn-outline{background:transparent;border:2px solid var(--violet);color:var(--violet)}
+.btn-outline:hover{background:var(--violet-soft)}
+.btn[disabled]{opacity:.55;cursor:not-allowed;transform:none}
+
+/* ===================== SAS DE CONNEXION (OVERLAY) ===================== */
+#authOverlay{
+  position:fixed;inset:0;z-index:100;overflow:auto;
+  background:
+    radial-gradient(1100px 500px at 85% -10%,rgba(255,209,102,.18),transparent 60%),
+    radial-gradient(900px 600px at -10% 110%,rgba(194,24,91,.14),transparent 55%),
+    linear-gradient(135deg,#2e2461,#4f3d99 70%,#5d49ad);
+  display:flex;align-items:center;justify-content:center;padding:2rem 1rem;
+}
+#authOverlay.hidden{display:none}
+.auth-box{
+  width:min(440px,100%);background:#fff;border-radius:20px;
+  box-shadow:0 30px 80px rgba(20,15,50,.45);padding:2rem 2.1rem 1.7rem;
+}
+.auth-box .brand-mark{margin:0 auto .8rem;width:52px;height:52px;font-size:1.25rem}
+.auth-box h2{text-align:center;margin:.2rem 0 .3rem;font-size:1.45rem}
+.auth-box .sub{text-align:center;color:var(--ink-soft);font-size:.95rem;margin:0 0 1.3rem}
+.auth-tabs{display:flex;background:var(--violet-soft);border-radius:11px;padding:4px;margin-bottom:1.2rem}
+.auth-tabs button{
+  flex:1;border:none;background:transparent;border-radius:8px;padding:.5rem;
+  font-weight:700;font-family:var(--font-title);color:var(--violet-dark);font-size:.92rem;
+}
+.auth-tabs button[aria-selected="true"]{background:#fff;box-shadow:0 1px 5px rgba(34,34,61,.18)}
+.field{margin-bottom:1rem}
+.field label{display:block;font-weight:600;font-size:.9rem;margin-bottom:.3rem}
+.field input,.field select,.field textarea{
+  width:100%;border:2px solid #d8d5ea;border-radius:10px;padding:.6rem .8rem;
+  font-family:inherit;font-size:1rem;background:#fff;color:var(--ink);
+  transition:border-color .2s;
+}
+.field input:focus,.field select:focus,.field textarea:focus{
+  border-color:var(--violet);outline:none;box-shadow:0 0 0 3px rgba(79,61,153,.18);
+}
+.field .hint{font-size:.8rem;color:var(--ink-soft);margin-top:.25rem}
+.auth-msg{
+  min-height:1.4rem;font-size:.9rem;font-weight:600;margin:.3rem 0 .6rem;
+  border-radius:8px;padding:0;
+}
+.auth-msg.err{color:var(--err)}
+.auth-msg.ok{color:var(--ok)}
+.auth-msg.info{color:var(--ink-soft)}
+.auth-alt{margin-top:1.1rem;border-top:1px dashed #ddd9ee;padding-top:.9rem;text-align:center}
+.auth-alt summary{cursor:pointer;font-size:.86rem;color:var(--ink-soft);font-weight:600}
+.auth-alt summary:hover{color:var(--violet)}
+.gate-code input{
+  text-align:center;font-family:var(--font-title);font-weight:800;font-size:1.5rem;
+  letter-spacing:.4em;text-transform:uppercase;
+}
+.spin{display:inline-block;width:1em;height:1em;border:2.5px solid currentColor;border-right-color:transparent;border-radius:50%;animation:rot .7s linear infinite;vertical-align:-2px}
+@keyframes rot{to{transform:rotate(360deg)}}
+.badge-degrade{
+  display:none;background:#fff3cd;color:#7a5b00;border:1px solid #ffe08a;
+  border-radius:999px;padding:.2rem .75rem;font-size:.8rem;font-weight:700;
+}
+body.degraded .badge-degrade{display:inline-block}
+
+/* ===================== ÉTAPE 0 — ACCUEIL ===================== */
+.hero-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:1.2rem;align-items:stretch}
+@media(max-width:840px){.hero-grid{grid-template-columns:1fr}}
+.checklist-launch li{margin-bottom:.55rem}
+.qr-wrap{display:flex;flex-direction:column;align-items:center;gap:.6rem;text-align:center}
+#qrcode{background:#fff;padding:10px;border-radius:12px;border:1px solid #e4e1f2}
+#qrcode img,#qrcode canvas{display:block}
+.big-check{
+  display:inline-flex;align-items:center;gap:.6rem;border:2px solid var(--violet);
+  background:#fff;color:var(--violet-dark);border-radius:12px;padding:.7rem 1.3rem;
+  font-weight:700;font-family:var(--font-title);font-size:1.02rem;transition:all .2s;
+}
+.big-check.on{background:var(--ok);border-color:var(--ok);color:#fff}
+
+/* ===================== ÉTAPE 1 — CARTES NIVEAUX ===================== */
+.levels-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.1rem}
+@media(max-width:980px){.levels-grid{grid-template-columns:1fr}}
+.level-card{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  overflow:hidden;display:flex;flex-direction:column;border-top:6px solid var(--violet);
+}
+.level-card.n5{border-top-color:var(--teal)}
+.level-card.n4{border-top-color:var(--amber)}
+.level-card.n3{border-top-color:var(--plum)}
+.level-card .lvl-head{padding:1.15rem 1.3rem .4rem}
+.lvl-tag{
+  display:inline-block;font-family:var(--font-title);font-weight:800;font-size:.95rem;
+  border-radius:8px;padding:.15rem .6rem;margin-bottom:.5rem;
+}
+.n5 .lvl-tag{background:var(--teal-soft);color:var(--teal)}
+.n4 .lvl-tag{background:var(--amber-soft);color:var(--amber)}
+.n3 .lvl-tag{background:var(--plum-soft);color:var(--plum)}
+.level-card h3{font-size:1.08rem;margin:.1rem 0 .2rem}
+.level-card ul.phares{padding-left:1.2rem;margin:.5rem 1.3rem .9rem .55rem}
+.level-card ul.phares li{margin-bottom:.35rem}
+.lvl-detail-btn{
+  margin:auto 1.3rem 1.1rem;align-self:flex-start;
+  background:none;border:none;color:var(--violet);font-weight:700;
+  padding:.3rem 0;font-size:.92rem;display:inline-flex;align-items:center;gap:.35rem;
+}
+.lvl-detail-btn::after{content:"▾";transition:transform .25s}
+.lvl-detail-btn[aria-expanded="true"]::after{transform:rotate(180deg)}
+.lvl-detail{
+  max-height:0;overflow:hidden;transition:max-height .4s ease;
+  background:#faf9fe;border-top:1px solid #ece9f9;
+}
+.lvl-detail.open{max-height:600px}
+.lvl-detail ul{padding:1rem 1.3rem 1rem 2rem;margin:0;font-size:.93rem}
+.lvl-detail li{margin-bottom:.3rem}
+.tools-details{margin-top:1.3rem}
+.tools-details summary{
+  cursor:pointer;font-family:var(--font-title);font-weight:700;color:var(--violet-dark);
+  padding:.6rem 0;
+}
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-top:.6rem}
+@media(max-width:980px){.tools-grid{grid-template-columns:1fr}}
+.tools-grid h4{margin:.2rem 0 .4rem;font-size:1rem}
+.tools-grid ul{margin:0;padding-left:1.15rem;font-size:.9rem}
+.tools-grid li{margin-bottom:.25rem}
+.flag{
+  background:#fff3cd;color:#7a5b00;border-radius:6px;padding:0 .35rem;
+  font-size:.78rem;font-weight:700;white-space:nowrap;
+}
+
+/* ===================== CHECKPOINTS ===================== */
+.callout{
+  border-left:5px solid var(--accent);background:#fbe7f0;border-radius:0 12px 12px 0;
+  padding:.9rem 1.2rem;margin-bottom:1.2rem;font-weight:600;
+}
+.callout.violet{border-left-color:var(--violet);background:var(--violet-soft)}
+.checkpoint{
+  display:flex;gap:.9rem;align-items:flex-start;background:var(--card);
+  border-radius:var(--radius);box-shadow:var(--shadow);padding:1.05rem 1.25rem;
+  margin-bottom:.85rem;transition:background .25s;
+}
+.checkpoint.checked{background:#f0faf3;box-shadow:inset 0 0 0 2px #bfe6cb}
+.checkpoint input[type=checkbox]{
+  width:1.5rem;height:1.5rem;margin-top:.15rem;flex:none;accent-color:var(--ok);cursor:pointer;
+}
+.checkpoint label{cursor:pointer}
+.checkpoint b{font-family:var(--font-title)}
+.checkpoint .cp-desc{display:block;color:var(--ink-soft);font-size:.92rem;margin-top:.15rem}
+.link-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem}
+
+/* ===================== DICTÉE / CHAMPS ===================== */
+.field-mic{position:relative}
+.field-mic textarea,.field-mic input[type=text]{padding-right:3.1rem}
+.mic-btn{
+  position:absolute;right:.5rem;top:2rem;width:2.3rem;height:2.3rem;
+  border-radius:50%;border:2px solid var(--violet-soft);background:#fff;
+  display:grid;place-items:center;font-size:1.05rem;transition:all .2s;
+}
+.mic-btn:hover{border-color:var(--violet);background:var(--violet-soft)}
+.mic-btn.rec{background:var(--err);border-color:var(--err);color:#fff;animation:pulse 1.1s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(179,38,30,.45)}50%{box-shadow:0 0 0 9px rgba(179,38,30,0)}}
+textarea{resize:vertical;min-height:90px}
+
+/* ===================== CAPTURES D'ÉCRAN JOINTES ===================== */
+.attach-row{display:flex;align-items:center;gap:.8rem;margin-top:.6rem;flex-wrap:wrap}
+.btn-attach{
+  background:#fff;border:2px dashed #c9c2e8;border-radius:10px;color:var(--violet-dark);
+  font-weight:600;font-size:.88rem;padding:.45rem .9rem;transition:all .2s;
+}
+.btn-attach:hover{border-color:var(--violet);background:var(--violet-soft)}
+.attach-hint{font-size:.78rem;color:var(--ink-soft);max-width:46ch}
+.thumbs{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:.7rem}
+.thumbs:empty{display:none}
+.thumb{position:relative;border:1px solid #e0dcf0;border-radius:10px;overflow:hidden;background:#fff;box-shadow:var(--shadow)}
+.thumb img{height:92px;width:auto;display:block}
+.thumb button{
+  position:absolute;top:4px;right:4px;width:1.55rem;height:1.55rem;border-radius:50%;
+  border:none;background:rgba(34,34,61,.75);color:#fff;font-size:.8rem;line-height:1;
+}
+.thumb button:hover{background:var(--err)}
+
+/* ===================== MUR ===================== */
+.wall-form{display:grid;grid-template-columns:1fr 130px 2fr auto;gap:.8rem;align-items:end}
+@media(max-width:900px){.wall-form{grid-template-columns:1fr 1fr}.wall-form .btn{grid-column:1/-1}}
+.wall-status{font-size:.88rem;color:var(--ink-soft);margin:.6rem 0 0;min-height:1.3rem;font-weight:600}
+.wall-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:.9rem;margin-top:1.1rem}
+.wall-item{
+  background:var(--card);border-radius:12px;box-shadow:var(--shadow);
+  padding:.95rem 1.1rem;border-left:5px solid var(--violet);animation:fadeUp .3s ease;
+}
+.wall-item.n5e{border-left-color:var(--teal)}
+.wall-item.n4e{border-left-color:var(--amber)}
+.wall-item.n3e{border-left-color:var(--plum)}
+.wall-item .who{display:flex;justify-content:space-between;gap:.5rem;align-items:center;margin-bottom:.3rem}
+.wall-item .who b{font-family:var(--font-title)}
+.wall-item .chip{font-size:.76rem;font-weight:800;border-radius:999px;padding:.1rem .6rem;background:var(--violet-soft);color:var(--violet-dark)}
+.wall-item.n5e .chip{background:var(--teal-soft);color:var(--teal)}
+.wall-item.n4e .chip{background:var(--amber-soft);color:var(--amber)}
+.wall-item.n3e .chip{background:var(--plum-soft);color:var(--plum)}
+.wall-item p{margin:.2rem 0 0;font-size:.95rem}
+.wall-empty{color:var(--ink-soft);font-style:italic;padding:1rem 0}
+
+/* ===================== PLANIFICATION ANNUELLE ===================== */
+.plan-tabs{display:inline-flex;background:var(--violet-soft);border-radius:11px;padding:4px;margin-bottom:1rem;gap:2px}
+.plan-tabs button{
+  border:none;background:transparent;border-radius:8px;padding:.45rem 1.5rem;
+  font-weight:700;font-family:var(--font-title);color:var(--violet-dark);font-size:1rem;
+}
+.plan-tabs button[aria-selected="true"]{background:#fff;box-shadow:0 1px 5px rgba(34,34,61,.18)}
+.plan-sheet{
+  background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
+  padding:1.2rem 1.4rem;margin-bottom:1.2rem;
+}
+.plan-sheet h3{margin:.1rem 0 .9rem;display:flex;align-items:center;gap:.6rem}
+.plan-table{width:100%;border-collapse:collapse;font-size:.88rem}
+.plan-table th{
+  font-family:var(--font-title);font-size:.76rem;color:var(--ink-soft);
+  padding:.3rem .15rem;text-align:center;border-bottom:2px solid var(--violet-soft);
+}
+.plan-table th:first-child{text-align:left;width:28%}
+.plan-table td{border-bottom:1px solid #efedf8;padding:.3rem .15rem;text-align:center}
+.plan-table td:first-child{text-align:left;padding-left:.3rem}
+.plan-table tbody tr:hover{background:#faf9fe}
+.plan-table input[type=checkbox]{width:1.15rem;height:1.15rem;accent-color:var(--violet);cursor:pointer}
+.plan-table input[type=text]{
+  width:100%;border:1.5px dashed #c9c2e8;border-radius:7px;padding:.25rem .5rem;
+  font-size:.85rem;font-family:inherit;
+}
+.plan-table input[type=text]:focus{border-style:solid;border-color:var(--violet);outline:none}
+.plan-actions{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:.4rem}
+.plan-hint{font-size:.8rem;color:var(--ink-soft);max-width:52ch}
+
+/* ===================== RESSOURCES ===================== */
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+@media(max-width:840px){.res-grid{grid-template-columns:1fr}}
+.res-card{display:flex;flex-direction:column;gap:.7rem}
+.res-card .btn{align-self:flex-start}
+
+/* ===================== MINUTEUR ===================== */
+#timerWidget{
+  position:fixed;right:1.1rem;bottom:1.1rem;z-index:60;background:#fff;
+  border-radius:16px;box-shadow:0 10px 40px rgba(20,15,50,.3);
+  padding:1rem 1.2rem;width:230px;display:none;
+}
+#timerWidget.open{display:block}
+#timerWidget h3{margin:0 0 .5rem;font-size:.95rem;display:flex;justify-content:space-between;align-items:center}
+#timerWidget h3 button{background:none;border:none;font-size:1.1rem;color:var(--ink-soft)}
+#timerDisplay{
+  font-family:var(--font-title);font-weight:800;font-size:2.7rem;text-align:center;
+  letter-spacing:.02em;color:var(--violet-dark);font-variant-numeric:tabular-nums;
+}
+#timerWidget.over #timerDisplay{color:var(--err);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.35}}
+.timer-presets{display:flex;gap:.4rem;justify-content:center;margin:.4rem 0 .6rem}
+.timer-presets button{
+  border:1.5px solid var(--violet-soft);background:#fff;border-radius:8px;
+  padding:.2rem .55rem;font-size:.82rem;font-weight:700;color:var(--violet-dark);
+}
+.timer-presets button:hover{background:var(--violet-soft)}
+.timer-controls{display:flex;gap:.5rem}
+.timer-controls .btn{flex:1;padding:.45rem;font-size:.85rem;justify-content:center}
+
+/* ===================== IMPRESSION ===================== */
+@media print{
+  header.app-header,nav.stepper,.nav-bottom,#timerWidget,.mic-btn,
+  .no-print,#authOverlay{display:none!important}
+  body{background:#fff;font-size:11pt}
+  main{max-width:none;padding:0}
+  /* animation:none est indispensable : figée à son 1er état (opacity:0), elle rendait les pages blanches */
+  section.step{display:block!important;animation:none!important;opacity:1!important;page-break-inside:avoid;margin-bottom:1.4rem}
+  .card,.checkpoint,.level-card,.wall-item{box-shadow:none;border:1px solid #ccc}
+  .thumb img{height:auto;max-width:75mm}
+  /* Feuilles de programmation : toutes visibles à l'impression globale */
+  .plan-sheet{display:block!important;box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
+  /* Mode « Imprimer mes feuilles » : uniquement les feuilles cochées, une par page */
+  body.print-planning section.step{display:none!important}
+  body.print-planning #step-5{display:block!important}
+  body.print-planning .plan-sheet{page-break-after:always}
+  body.print-planning .plan-sheet:last-child{page-break-after:auto}
+  body.print-planning .plan-sheet.print-skip{display:none!important}
+  .lvl-detail{max-height:none!important}
+  .step-head h2{font-size:15pt}
+  a::after{content:" (" attr(href) ")";font-size:.78em;color:#555;word-break:break-all}
+  .qr-wrap a::after{content:""}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     SAS DE CONNEXION (compte site techno + code capsule)
+============================================================ -->
+<div id="authOverlay" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+  <div class="auth-box">
+    <div class="brand-mark" aria-hidden="true">A(s)</div>
+
+    <!-- Phase 1 : compte -->
+    <div id="authPhaseAccount">
+      <h2 id="authTitle">Formation Avenir(s)</h2>
+      <p class="sub">Connectez-vous avec votre compte « site techno »<br>ou créez-en un en quelques secondes.</p>
+
+      <div class="auth-tabs" role="tablist" aria-label="Connexion ou inscription">
+        <button id="tabLogin" role="tab" aria-selected="true" aria-controls="authForm">Se connecter</button>
+        <button id="tabRegister" role="tab" aria-selected="false" aria-controls="authForm">Créer un compte</button>
+      </div>
+
+      <form id="authForm" novalidate>
+        <div class="field">
+          <label for="authUser">Identifiant</label>
+          <input id="authUser" type="text" autocomplete="username" required
+                 maxlength="40" placeholder="ex. : prenom.nom">
+        </div>
+        <div class="field">
+          <label for="authPass">Mot de passe</label>
+          <input id="authPass" type="password" autocomplete="current-password" required
+                 minlength="4" maxlength="60" placeholder="••••••••">
+          <p class="hint">🔒 Votre mot de passe est haché (SHA-256) sur votre poste : il n'est jamais transmis ni stocké en clair.</p>
+        </div>
+        <p id="authMsg" class="auth-msg" role="status" aria-live="polite"></p>
+        <button type="submit" id="authSubmit" class="btn btn-primary" style="width:100%;justify-content:center">
+          Se connecter
+        </button>
+      </form>
+
+      <details class="auth-alt">
+        <summary>Souci de réseau ? Accès animateur</summary>
+        <div class="field" style="margin-top:.8rem">
+          <label for="bypassInput">Code maître (fourni par l'animateur)</label>
+          <input id="bypassInput" type="password" maxlength="40" autocomplete="off">
+        </div>
+        <button type="button" id="bypassBtn" class="btn btn-secondary" style="width:100%;justify-content:center">
+          Entrer en mode secours
+        </button>
+        <p id="bypassMsg" class="auth-msg" role="status" aria-live="polite"></p>
+      </details>
+    </div>
+
+    <!-- Phase 2 : code capsule -->
+    <div id="authPhaseGate" hidden>
+      <h2>Bienvenue, <span id="gateUserName">collègue</span> 👋</h2>
+      <p class="sub">Saisissez le <strong>code de la capsule</strong> affiché à l'écran pour entrer dans la formation.</p>
+      <form id="gateForm" novalidate>
+        <div class="field gate-code">
+          <label for="gateInput">Code capsule</label>
+          <input id="gateInput" type="text" maxlength="8" autocomplete="off"
+                 spellcheck="false" placeholder="•••••">
+        </div>
+        <p id="gateMsg" class="auth-msg" role="status" aria-live="polite"></p>
+        <button type="submit" class="btn btn-accent" style="width:100%;justify-content:center">
+          Ouvrir la capsule
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     EN-TÊTE
+============================================================ -->
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo"><img src="logo-college.png" alt="Collège Saint Pierre"></div>
+      <div>
+        <h1>Formation Avenir(s)</h1>
+        <p>Collège Saint Pierre · animée par Romain Blanchard · 45-60 min</p>
+      </div>
+    </div>
+    <span class="badge-degrade" title="Le serveur est injoignable : le mur fonctionne en local sur ce poste.">⚠ Mode dégradé</span>
+    <div class="header-actions no-print">
+      <button class="btn-ghost" id="timerToggle" aria-pressed="false">⏱ Minuteur</button>
+      <button class="btn-ghost" id="fsToggle" aria-pressed="false">⛶ Plein écran</button>
+    </div>
+  </div>
+  <div class="progress-track" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+</header>
+
+<!-- ============================================================
+     NAVIGATION
+============================================================ -->
+<nav class="stepper no-print" aria-label="Étapes de la formation">
+  <ol id="stepperList">
+    <li><button data-step="0">0 · Accueil</button></li>
+    <li><button data-step="1">1 · Objectifs</button></li>
+    <li><button data-step="2">2 · Côté élève</button></li>
+    <li><button data-step="3">3 · Côté prof</button></li>
+    <li><button data-step="4">4 · Ma fiche</button></li>
+    <li><button data-step="5">5 · Planifier</button></li>
+    <li><button data-step="6">6 · Mur de promo</button></li>
+    <li><button data-step="7">7 · Ressources</button></li>
+    <li><button data-step="8">8 · Sauvegarde</button></li>
+  </ol>
+</nav>
+
+<main>
+
+<!-- ============ ÉTAPE 0 — ACCUEIL ============ -->
+<section class="step" id="step-0" aria-labelledby="h-step0">
+  <div class="step-head">
+    <span class="step-kicker">Étape 0 · Démarrage</span>
+    <h2 id="h-step0">Bienvenue dans la capsule Avenir(s)</h2>
+    <p class="lead">Cette page est à la fois le support projeté et votre fiche de travail interactive. Avancez à votre rythme : tout ce que vous cochez ou notez pourra être exporté à la fin.</p>
+  </div>
+
+  <div class="hero-grid">
+    <div class="card">
+      <h3>🚀 Pour commencer</h3>
+      <ol class="checklist-launch">
+        <li><strong>Ouvrez École Directe</strong> sur votre session habituelle.</li>
+        <li>Cliquez sur le <strong>connecteur Avenir(s)</strong> pour accéder à la plateforme sans mot de passe supplémentaire.</li>
+        <li>Gardez l'onglet Avenir(s) ouvert : nous y retournerons aux étapes 2 et 3.</li>
+      </ol>
+      <p style="margin-bottom:1rem">
+        <button type="button" class="big-check" id="connectedBtn" aria-pressed="false">
+          <span aria-hidden="true">☐</span> Je suis connecté·e à Avenir(s)
+        </button>
+      </p>
+      <p style="font-size:.92rem;color:var(--ink-soft)">
+        Lien de secours si le connecteur ne répond pas :
+        <a href="https://app.avenirs.onisep.fr/" target="_blank" rel="noopener">app.avenirs.onisep.fr</a>
+      </p>
+    </div>
+    <div class="card qr-wrap">
+      <h3 style="margin-bottom:.2rem">📱 Rejoindre la capsule</h3>
+      <p style="margin:0;font-size:.9rem;color:var(--ink-soft)">Scannez pour ouvrir cette page sur un autre appareil.</p>
+      <div id="qrcode" role="img" aria-label="QR code du lien de la capsule"></div>
+      <a id="selfLink" href="#" style="font-size:.82rem;word-break:break-all"></a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ÉTAPE 1 — OBJECTIFS PAR NIVEAU ============ -->
+<section class="step" id="step-1" aria-labelledby="h-step1">
+  <div class="step-head">
+    <span class="step-kicker">Étape 1 · Repères</span>
+    <h2 id="h-step1">Ce que vos élèves font sur Avenir(s), niveau par niveau</h2>
+    <p class="lead">Trois parcours progressifs, de la découverte de soi en 5e à la préparation du stage et de l'orientation en 3e. Dépliez chaque carte pour la liste complète des objectifs.</p>
+  </div>
+
+  <div class="levels-grid">
+    <!-- 5e -->
+    <article class="level-card n5">
+      <div class="lvl-head">
+        <span class="lvl-tag">5e</span>
+        <h3>Explorer mes goûts, mes points forts et découvrir des métiers</h3>
+      </div>
+      <ul class="phares">
+        <li>Repérer mes intérêts</li>
+        <li>Identifier mes points forts</li>
+        <li>Découvrir et observer des métiers très différents</li>
+        <li>Imaginer les métiers du futur</li>
+      </ul>
+      <button type="button" class="lvl-detail-btn" aria-expanded="false" aria-controls="detail-5e">Voir tous les objectifs</button>
+      <div class="lvl-detail" id="detail-5e">
+        <ul>
+          <li>Repérer mes intérêts</li>
+          <li>Identifier mes points forts</li>
+          <li>Découvrir des métiers très différents et apprendre à les observer</li>
+          <li>Explorer des métiers qu'on croit connaître</li>
+          <li>Imaginer des métiers du futur</li>
+          <li>Découvrir des métiers avec des professionnels</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- 4e -->
+    <article class="level-card n4">
+      <div class="lvl-head">
+        <span class="lvl-tag">4e</span>
+        <h3>Approfondir mes intérêts, explorer les métiers et les parcours</h3>
+      </div>
+      <ul class="phares">
+        <li>Identifier mes centres d'intérêt</li>
+        <li>Explorer les métiers et secteurs autour de moi</li>
+        <li>Aller à la rencontre des professionnels</li>
+        <li>Découvrir les parcours après le collège</li>
+      </ul>
+      <button type="button" class="lvl-detail-btn" aria-expanded="false" aria-controls="detail-4e">Voir tous les objectifs</button>
+      <div class="lvl-detail" id="detail-4e">
+        <ul>
+          <li>Repérer mes intérêts / valeurs / points forts</li>
+          <li>Identifier mes centres d'intérêt</li>
+          <li>Faire le point sur mes points forts</li>
+          <li>Explorer les métiers et activités professionnelles</li>
+          <li>Découvrir les secteurs d'activités autour de moi</li>
+          <li>Observer les activités professionnelles</li>
+          <li>Aller à la rencontre des professionnels</li>
+          <li>Découvrir les parcours possibles après le collège</li>
+          <li>M'informer sur les voies de formation après le collège</li>
+          <li>Découvrir des parcours intéressants</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- 3e -->
+    <article class="level-card n3">
+      <div class="lvl-head">
+        <span class="lvl-tag">3e</span>
+        <h3>Faire le point et préparer mon orientation et mon stage</h3>
+      </div>
+      <ul class="phares">
+        <li>Faire le point sur mes centres d'intérêt et points forts</li>
+        <li>Identifier les voies et modalités de formation après la 3e</li>
+        <li>Découvrir l'apprentissage</li>
+        <li>Préparer et exploiter mon stage de découverte</li>
+      </ul>
+      <button type="button" class="lvl-detail-btn" aria-expanded="false" aria-controls="detail-3e">Voir tous les objectifs</button>
+      <div class="lvl-detail" id="detail-3e">
+        <ul>
+          <li>Faire le point sur mes centres d'intérêt</li>
+          <li>Faire le point sur mes points forts et mes motivations</li>
+          <li>Identifier les différentes voies et modalités de formation après la 3e</li>
+          <li>M'informer sur les différentes possibilités</li>
+          <li>Découvrir l'apprentissage</li>
+          <li>Rencontrer et poser des questions</li>
+          <li>Faire un stage de découverte intéressant</li>
+          <li>Préparer mon stage de découverte</li>
+          <li>Apprendre à observer</li>
+          <li>Exploiter mon stage de découverte</li>
+        </ul>
+      </div>
+    </article>
+  </div>
+
+  <details class="tools-details card" style="padding:1rem 1.5rem">
+    <summary>🧰 Les outils proposés aux élèves, par niveau (référence)</summary>
+    <div class="tools-grid">
+      <div>
+        <h4>5e</h4>
+        <ul>
+          <li>« Je découvre des métiers »</li>
+          <li>Rencontres avec des pros</li>
+          <li>Onisep Kiosque</li>
+          <li>Les Cordées de la Réussite — Le journal de ma Cordée</li>
+          <li>JobIRL</li>
+          <li>L'aventure du vivant</li>
+          <li>Outil régional métiers &amp; formations — équivalent Pays de la Loire / académie de Nantes <span class="flag">À VÉRIFIER</span></li>
+        </ul>
+      </div>
+      <div>
+        <h4>4e</h4>
+        <ul>
+          <li>Rencontres avec des pros</li>
+          <li>« Je découvre des métiers »</li>
+          <li>Préparer mon accès au monde professionnel</li>
+          <li>Onisep Kiosque</li>
+          <li>1 élève 1 stage</li>
+          <li>Le journal de ma Cordée</li>
+          <li>JobIRL</li>
+          <li>L'aventure du vivant</li>
+        </ul>
+      </div>
+      <div>
+        <h4>3e</h4>
+        <ul>
+          <li>Rencontres avec des pros</li>
+          <li>« Je découvre des métiers »</li>
+          <li>Préparer mon accès au monde professionnel</li>
+          <li>Journées portes ouvertes</li>
+          <li>Je découvre les MOOC d'orientation</li>
+          <li>1 élève 1 stage</li>
+          <li>Le journal de ma Cordée</li>
+          <li>Horizons 21</li>
+          <li>JobIRL</li>
+          <li>My Future</li>
+          <li>L'aventure du vivant</li>
+        </ul>
+      </div>
+    </div>
+  </details>
+</section>
+
+<!-- ============ ÉTAPE 2 — CÔTÉ ÉLÈVE ============ -->
+<section class="step" id="step-2" aria-labelledby="h-step2">
+  <div class="step-head">
+    <span class="step-kicker">Étape 2 · Mission côté élève</span>
+    <h2 id="h-step2">Dans la peau d'un élève de 5e</h2>
+    <p class="lead">Démonstration en direct du parcours élève. Cochez chaque point au fur et à mesure que vous l'observez à l'écran.</p>
+  </div>
+
+  <div class="callout">
+    👀 <strong>Suivez la démonstration projetée</strong> (compte élève 5e). Ne vous connectez pas vous-même à ce compte.
+  </div>
+
+  <div class="checkpoint" data-check="eleve-0">
+    <input type="checkbox" id="cpE0">
+    <label for="cpE0"><b>Le test des centres d'intérêt</b>
+      <span class="cp-desc">Comment l'élève découvre ses goûts et obtient un profil d'intérêts.</span></label>
+  </div>
+  <div class="checkpoint" data-check="eleve-1">
+    <input type="checkbox" id="cpE1">
+    <label for="cpE1"><b>« Je découvre des métiers » : vidéos, quiz et jeux</b>
+      <span class="cp-desc">Les contenus ludiques qui font explorer des métiers très variés.</span></label>
+  </div>
+  <div class="checkpoint" data-check="eleve-2">
+    <input type="checkbox" id="cpE2">
+    <label for="cpE2"><b>Le dépôt dans le portfolio</b>
+      <span class="cp-desc">Comment les découvertes de l'élève sont conservées dans son portfolio Avenir(s).</span></label>
+  </div>
+
+  <div class="card field field-mic" style="margin-top:1.3rem">
+    <label for="noteEleve"><strong>📝 Ce qui me servira pour ma classe</strong> — notez librement (clavier ou dictée 🎙)</label>
+    <textarea id="noteEleve" rows="4" placeholder="Ex. : faire passer le test d'intérêts en heure de vie de classe avant le conseil…"></textarea>
+    <button type="button" class="mic-btn no-print" data-dictate="noteEleve" aria-label="Dicter dans ce champ" title="Dictée vocale">🎙</button>
+    <div class="attach-row no-print">
+      <button type="button" class="btn-attach" data-attach="noteEleve">📷 Joindre une capture d'écran</button>
+      <span class="attach-hint">Astuce : <kbd>Win</kbd>+<kbd>Maj</kbd>+<kbd>S</kbd> pour capturer, puis <kbd>Ctrl</kbd>+<kbd>V</kbd> directement dans le champ. ⚠ Évitez d'y faire figurer des noms d'élèves.</span>
+    </div>
+    <div class="thumbs" id="thumbs-noteEleve" aria-label="Captures jointes"></div>
+  </div>
+</section>
+
+<!-- ============ ÉTAPE 3 — CÔTÉ PROF ============ -->
+<section class="step" id="step-3" aria-labelledby="h-step3">
+  <div class="step-head">
+    <span class="step-kicker">Étape 3 · Mission côté prof</span>
+    <h2 id="h-step3">Votre espace accompagnateur</h2>
+    <p class="lead">À vous de jouer : sur votre poste, explorez votre espace Avenir(s) et validez les trois repérages ci-dessous.</p>
+  </div>
+
+  <div class="callout violet">
+    💻 Travaillez <strong>sur votre propre espace accompagnateur</strong> (onglet Avenir(s) ouvert à l'étape 0).
+  </div>
+
+  <div class="checkpoint" data-check="prof-0">
+    <input type="checkbox" id="cpP0">
+    <label for="cpP0"><b>J'ai repéré le suivi d'activité de mes élèves</b>
+      <span class="cp-desc">Où voir qui a fait quoi, et quand.</span></label>
+  </div>
+  <div class="checkpoint" data-check="prof-1">
+    <input type="checkbox" id="cpP1">
+    <label for="cpP1"><b>J'ai ouvert la banque d'activités clés en main</b>
+      <span class="cp-desc">Des séances prêtes à l'emploi à proposer à votre classe.</span></label>
+  </div>
+  <div class="checkpoint" data-check="prof-2">
+    <input type="checkbox" id="cpP2">
+    <label for="cpP2"><b>J'ai repéré le modèle de progression de mon niveau</b>
+      <span class="cp-desc">La trame annuelle proposée pour la 5e, la 4e ou la 3e.</span></label>
+  </div>
+
+  <div class="link-row no-print">
+    <a class="btn btn-primary" href="https://app.avenirs.onisep.fr/" target="_blank" rel="noopener">↗ Ouvrir Avenir(s)</a>
+    <a class="btn btn-outline" href="https://app.avenirs.onisep.fr/" target="_blank" rel="noopener">↗ Banque d'activités <span class="flag">À VÉRIFIER</span></a>
+    <a class="btn btn-outline" href="https://app.avenirs.onisep.fr/" target="_blank" rel="noopener">↗ Modèles de progression <span class="flag">À VÉRIFIER</span></a>
+  </div>
+</section>
+
+<!-- ============ ÉTAPE 4 — MA FICHE ============ -->
+<section class="step" id="step-4" aria-labelledby="h-step4">
+  <div class="step-head">
+    <span class="step-kicker">Étape 4 · Production</span>
+    <h2 id="h-step4">Ma fiche : une activité pour ma classe</h2>
+    <p class="lead">Choisissez UNE activité Avenir(s) que vous mettrez en œuvre avec une de vos classes. Les champs texte acceptent la dictée vocale 🎙.</p>
+  </div>
+
+  <div class="card">
+    <div class="field field-mic">
+      <label for="ficheActivite">Activité retenue</label>
+      <input type="text" id="ficheActivite" maxlength="160"
+             placeholder="Ex. : Test des centres d'intérêt + restitution en demi-groupe">
+      <button type="button" class="mic-btn no-print" data-dictate="ficheActivite" aria-label="Dicter dans ce champ" title="Dictée vocale">🎙</button>
+    </div>
+    <div class="field">
+      <label for="ficheNiveau">Niveau visé</label>
+      <select id="ficheNiveau">
+        <option value="">— Choisir un niveau —</option>
+        <option value="5e">5e</option>
+        <option value="4e">4e</option>
+        <option value="3e">3e</option>
+      </select>
+    </div>
+    <div class="field field-mic">
+      <label for="ficheQuand">Quand et comment je l'intègre</label>
+      <textarea id="ficheQuand" rows="4"
+        placeholder="Ex. : en heure de vie de classe, période 3, en lien avec la préparation du conseil de classe…"></textarea>
+      <button type="button" class="mic-btn no-print" data-dictate="ficheQuand" aria-label="Dicter dans ce champ" title="Dictée vocale">🎙</button>
+      <div class="attach-row no-print">
+        <button type="button" class="btn-attach" data-attach="ficheQuand">📷 Joindre une capture d'écran</button>
+        <span class="attach-hint">Astuce : <kbd>Win</kbd>+<kbd>Maj</kbd>+<kbd>S</kbd> pour capturer, puis <kbd>Ctrl</kbd>+<kbd>V</kbd> directement dans le champ. ⚠ Évitez d'y faire figurer des noms d'élèves.</span>
+      </div>
+      <div class="thumbs" id="thumbs-ficheQuand" aria-label="Captures jointes"></div>
+    </div>
+    <p style="font-size:.88rem;color:var(--ink-soft);margin-bottom:0">
+      💡 Cette fiche reste sur votre poste. À l'étape 6 vous pourrez la partager au mur de promo, et à l'étape 8 l'exporter.
+    </p>
+  </div>
+</section>
+
+<!-- ============ ÉTAPE 5 — PLANIFIER MON ANNÉE ============ -->
+<section class="step" id="step-5" aria-labelledby="h-step5">
+  <div class="step-head">
+    <span class="step-kicker">Étape 5 · Planifier</span>
+    <h2 id="h-step5">Ma programmation annuelle</h2>
+    <p class="lead">Replacez les activités Avenir(s) dans votre calendrier : sur la feuille de votre niveau, cochez le ou les mois visés pour chaque activité. Deux lignes libres accueillent vos activités maison.</p>
+  </div>
+
+  <div class="plan-tabs no-print" role="tablist" aria-label="Choisir un niveau">
+    <button type="button" role="tab" data-plan="5e" aria-selected="true">5e</button>
+    <button type="button" role="tab" data-plan="4e" aria-selected="false">4e</button>
+    <button type="button" role="tab" data-plan="3e" aria-selected="false">3e</button>
+  </div>
+  <div id="planSheets"></div>
+  <div class="plan-actions no-print">
+    <button type="button" class="btn btn-secondary" id="planPrintBtn">🖨 Imprimer mes feuilles</button>
+    <span class="plan-hint">Seules les feuilles contenant au moins une coche s'impriment — choisissez l'orientation « Paysage » dans la fenêtre d'impression.</span>
+  </div>
+  <p id="planStatus" class="wall-status" role="status" aria-live="polite"></p>
+</section>
+
+<!-- ============ ÉTAPE 6 — MUR DE PROMO ============ -->
+<section class="step" id="step-6" aria-labelledby="h-step6">
+  <div class="step-head">
+    <span class="step-kicker">Étape 6 · Partage</span>
+    <h2 id="h-step6">Le mur de la promo</h2>
+    <p class="lead">Publiez votre activité : le mur se met à jour en direct sur tous les postes et à l'écran projeté.</p>
+  </div>
+
+  <div class="card no-print">
+    <form id="wallForm" class="wall-form" novalidate>
+      <div class="field" style="margin:0">
+        <label for="wallPseudo">Pseudo</label>
+        <input type="text" id="wallPseudo" maxlength="30" required placeholder="Votre prénom">
+      </div>
+      <div class="field" style="margin:0">
+        <label for="wallNiveau">Niveau</label>
+        <select id="wallNiveau" required>
+          <option value="">—</option>
+          <option value="5e">5e</option>
+          <option value="4e">4e</option>
+          <option value="3e">3e</option>
+        </select>
+      </div>
+      <div class="field" style="margin:0">
+        <label for="wallActivite">Mon activité</label>
+        <input type="text" id="wallActivite" maxlength="160" required placeholder="Reprise automatique de votre fiche">
+      </div>
+      <button type="submit" class="btn btn-accent" id="wallSubmit">📌 Publier au mur</button>
+    </form>
+    <p id="wallStatus" class="wall-status" role="status" aria-live="polite"></p>
+  </div>
+
+  <div id="wallList" class="wall-list" aria-live="polite" aria-label="Contributions du mur"></div>
+  <p class="wall-empty" id="wallEmpty">Le mur est encore vide… soyez la première contribution ! 🎉</p>
+</section>
+
+<!-- ============ ÉTAPE 7 — RESSOURCES ============ -->
+<section class="step" id="step-7" aria-labelledby="h-step7">
+  <div class="step-head">
+    <span class="step-kicker">Étape 7 · Pour aller plus loin</span>
+    <h2 id="h-step7">Ressources de la formation</h2>
+    <p class="lead">Tout ce qu'il faut pour prolonger la prise en main dans vos classes.</p>
+  </div>
+
+  <div class="res-grid">
+    <div class="card res-card">
+      <h3>📁 Documents de la formation</h3>
+      <p>Diaporama, fiches d'activités, tutoriels pas-à-pas : tout est dans le dossier partagé.</p>
+      <a class="btn btn-primary" target="_blank" rel="noopener"
+         href="https://drive.google.com/drive/folders/1JX9urJcr_XNL7jCIyhuqaRf832UCiRHn?usp=drive_link">
+        📁 Ouvrir le dossier Drive
+      </a>
+    </div>
+    <div class="card res-card">
+      <h3>🧭 Ressources officielles Onisep</h3>
+      <p>Guides « accompagner avec Avenir(s) » et actualités de la plateforme.</p>
+      <a class="btn btn-outline" target="_blank" rel="noopener" href="https://app.avenirs.onisep.fr/">
+        ↗ Avenir(s) — plateforme
+      </a>
+      <a class="btn btn-outline" href="[LIEN_ONISEP_ACCOMPAGNER]" target="_blank" rel="noopener">
+        ↗ Onisep — accompagner les équipes <span class="flag">LIEN À COMPLÉTER</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ÉTAPE 8 — SAUVEGARDE ============ -->
+<section class="step" id="step-8" aria-labelledby="h-step8">
+  <div class="step-head">
+    <span class="step-kicker">Étape 8 · Sauvegarde</span>
+    <h2 id="h-step8">Emportez votre travail</h2>
+    <p class="lead">Rien n'est stocké dans le navigateur : pensez à exporter votre récapitulatif avant de fermer la page.</p>
+  </div>
+
+  <div class="res-grid">
+    <div class="card res-card">
+      <h3>⬇️ Export Word</h3>
+      <p>Un document Word prêt à classer ou compléter, qui récapitule : votre compte, vos points cochés, votre note, votre fiche et vos publications au mur. S'ouvre dans Word ou LibreOffice.</p>
+      <button type="button" class="btn btn-primary" id="exportBtn">⬇️ Télécharger mon récapitulatif (Word)</button>
+    </div>
+    <div class="card res-card">
+      <h3>🖨 Impression / PDF</h3>
+      <p>Toutes les étapes (avec vos réponses) sur une mise en page propre. Choisissez « Enregistrer en PDF » comme imprimante : zéro papier nécessaire.</p>
+      <button type="button" class="btn btn-secondary" id="printBtn">🖨 Imprimer / exporter en PDF</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>✅ Avant de partir</h3>
+    <ul>
+      <li>Votre fiche d'activité est-elle publiée au mur (étape 6) ?</li>
+      <li>Votre programmation annuelle (étape 5) est-elle cochée, voire imprimée ?</li>
+      <li>Avez-vous mis le dossier Drive (étape 7) dans vos favoris ?</li>
+      <li>Récapitulatif téléchargé ou PDF généré ? Alors mission accomplie 🎯</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<input type="file" id="imgFileInput" accept="image/*" multiple hidden>
+
+<!-- ============ MINUTEUR FLOTTANT ============ -->
+<div id="timerWidget" role="region" aria-label="Minuteur de phase">
+  <h3>⏱ Minuteur de phase <button type="button" id="timerClose" aria-label="Fermer le minuteur">✕</button></h3>
+  <div id="timerDisplay">10:00</div>
+  <div class="timer-presets" role="group" aria-label="Durées prédéfinies">
+    <button type="button" data-min="3">3 min</button>
+    <button type="button" data-min="5">5 min</button>
+    <button type="button" data-min="10">10 min</button>
+    <button type="button" data-min="15">15 min</button>
+  </div>
+  <div class="timer-controls">
+    <button type="button" class="btn btn-primary" id="timerStart">▶ Lancer</button>
+    <button type="button" class="btn btn-secondary" id="timerReset">↺</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* ============================================================
+   CONFIGURATION — à compléter avant le jour J
+============================================================ */
+// ⬇️ Collez ici l'URL de votre Web App Google Apps Script
+//    (voir README-deploiement.md, section « Déployer »)
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww_xo5tMNz1KbpTavk09UsxR-2f42ENvtHT1hebHLxwQr0jXdTarHIf6vM_uBQKqqc3g/exec";
+
+// ⬇️ Code maître animateur : débloque l'accès si le serveur est injoignable
+const MASTER_BYPASS = "RUPN-SECOURS-26";
+
+// Code d'accès à la capsule (affiché à l'écran par l'animateur)
+const ACCESS_CODE = "AVN26";
+
+// Adresse publique de la capsule (GitHub Pages) : utilisée pour le QR code
+// quand la page est ouverte en local (fichier ou localhost), car un smartphone
+// ne peut pas ouvrir une adresse locale.
+const PUBLIC_URL = "https://blanchardromain-cyber.github.io/formation-avenirs/";
+
+/* ============================================================
+   ÉTAT EN MÉMOIRE (aucun localStorage : export explicite à l'étape 8)
+============================================================ */
+const state = {
+  user: null,          // identifiant connecté (ou "animateur" en bypass)
+  degraded: false,     // true si serveur injoignable
+  connectedAvenirs: false,
+  wallLocal: [],       // mur local (mode dégradé + copie de mes posts)
+  myPosts: [],         // mes publications (pour l'export)
+  images: { noteEleve: [], ficheQuand: [] }  // captures d'écran jointes {name,type,dataUrl}
+};
+const STEP_COUNT = 9;
+let currentStep = 0;
+
+const $ = (id) => document.getElementById(id);
+
+/* ============================================================
+   OUTILS — hachage SHA-256 côté client
+============================================================ */
+async function sha256(text){
+  const data = new TextEncoder().encode(text);
+  const buf = await crypto.subtle.digest("SHA-256", data);
+  return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2,"0")).join("");
+}
+
+/* ============================================================
+   API — un seul endpoint Apps Script.
+   POST en text/plain (requête « simple », pas de préflight CORS).
+============================================================ */
+function endpointConfigured(){
+  return APPS_SCRIPT_URL && /^https:\/\//.test(APPS_SCRIPT_URL);
+}
+async function api(payload){
+  if(!endpointConfigured()) throw new Error("ENDPOINT_NON_CONFIGURE");
+  const res = await fetch(APPS_SCRIPT_URL, {
+    method: "POST",
+    headers: { "Content-Type": "text/plain;charset=utf-8" },
+    body: JSON.stringify(payload)
+  });
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  return res.json();
+}
+async function apiGet(action){
+  if(!endpointConfigured()) throw new Error("ENDPOINT_NON_CONFIGURE");
+  const res = await fetch(APPS_SCRIPT_URL + "?action=" + encodeURIComponent(action), { method:"GET" });
+  if(!res.ok) throw new Error("HTTP " + res.status);
+  return res.json();
+}
+
+/* ============================================================
+   SAS DE CONNEXION
+============================================================ */
+let authMode = "login"; // ou "register"
+
+function setAuthMode(mode){
+  authMode = mode;
+  $("tabLogin").setAttribute("aria-selected", String(mode === "login"));
+  $("tabRegister").setAttribute("aria-selected", String(mode === "register"));
+  $("authSubmit").textContent = mode === "login" ? "Se connecter" : "Créer mon compte";
+  $("authPass").setAttribute("autocomplete", mode === "login" ? "current-password" : "new-password");
+  setMsg("authMsg","","info");
+}
+function setMsg(id, text, kind){
+  const el = $(id);
+  el.textContent = text;
+  el.className = "auth-msg " + (kind || "info");
+}
+
+$("tabLogin").addEventListener("click", () => setAuthMode("login"));
+$("tabRegister").addEventListener("click", () => setAuthMode("register"));
+
+$("authForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const username = $("authUser").value.trim();
+  const password = $("authPass").value;
+  if(!username || password.length < 4){
+    setMsg("authMsg","Identifiant requis et mot de passe d'au moins 4 caractères.","err");
+    return;
+  }
+  if(!window.crypto || !crypto.subtle){
+    setMsg("authMsg","Navigateur trop ancien (chiffrement indisponible). Utilisez le code animateur.","err");
+    return;
+  }
+  const btn = $("authSubmit");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spin" aria-hidden="true"></span>&nbsp;Vérification…';
+  try{
+    const passhash = await sha256(password);
+    const action = authMode === "login" ? "login" : "register";
+    const rep = await api({ action, username, passhash });
+    if(rep && rep.ok){
+      enterGate(username);
+    }else{
+      const msg = (rep && rep.error) ? rep.error :
+        (authMode === "login" ? "Identifiant ou mot de passe incorrect." : "Inscription impossible.");
+      setMsg("authMsg", msg, "err");
+    }
+  }catch(err){
+    setMsg("authMsg",
+      "Serveur injoignable. Réessayez, ou demandez le code animateur (« Accès animateur » ci-dessous).",
+      "err");
+  }finally{
+    btn.disabled = false;
+    btn.textContent = authMode === "login" ? "Se connecter" : "Créer mon compte";
+  }
+});
+
+/* Mode secours : code maître animateur */
+$("bypassBtn").addEventListener("click", () => {
+  const v = $("bypassInput").value.trim();
+  if(v && v === MASTER_BYPASS){
+    state.degraded = true;
+    document.body.classList.add("degraded");
+    enterGate($("authUser").value.trim() || "animateur");
+  }else{
+    setMsg("bypassMsg","Code maître incorrect.","err");
+  }
+});
+
+/* Phase 2 : code capsule */
+function enterGate(username){
+  state.user = username;
+  $("gateUserName").textContent = username;
+  $("authPhaseAccount").hidden = true;
+  $("authPhaseGate").hidden = false;
+  $("gateInput").focus();
+}
+$("gateForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  const code = $("gateInput").value.trim().toUpperCase();
+  if(code === ACCESS_CODE.toUpperCase()){
+    $("authOverlay").classList.add("hidden");
+    document.body.focus();
+    $("wallPseudo").value = state.user === "animateur" ? "" : state.user;
+    initQRCode();
+  }else{
+    setMsg("gateMsg","Code incorrect — regardez l'écran projeté 😉","err");
+    $("gateInput").select();
+  }
+});
+
+/* ============================================================
+   NAVIGATION PAR ÉTAPES
+============================================================ */
+function goToStep(n){
+  if(n < 0 || n >= STEP_COUNT) return;
+  currentStep = n;
+  document.querySelectorAll("section.step").forEach((s,i) => s.classList.toggle("active", i === n));
+  document.querySelectorAll("#stepperList button").forEach((b,i) => {
+    if(i === n) b.setAttribute("aria-current","step");
+    else b.removeAttribute("aria-current");
+  });
+  $("progressFill").style.width = ((n+1)/STEP_COUNT*100) + "%";
+  window.scrollTo({top:0, behavior:"smooth"});
+  if(n === 5 && $("ficheNiveau").value) selectPlanTab($("ficheNiveau").value);
+  if(n === 6) startWallPolling(); else stopWallPolling();
+}
+document.querySelectorAll("#stepperList button").forEach(b => {
+  b.addEventListener("click", () => goToStep(parseInt(b.dataset.step,10)));
+});
+
+/* Boutons Précédent / Suivant en bas de chaque étape */
+document.querySelectorAll("section.step").forEach((sec, i) => {
+  const nav = document.createElement("div");
+  nav.className = "nav-bottom no-print";
+  const prev = document.createElement("button");
+  prev.className = "btn btn-secondary";
+  prev.textContent = "← Précédent";
+  prev.disabled = i === 0;
+  prev.addEventListener("click", () => goToStep(i-1));
+  const next = document.createElement("button");
+  next.className = "btn btn-primary";
+  next.textContent = i === STEP_COUNT-1 ? "Retour à l'accueil ↺" : "Suivant →";
+  next.addEventListener("click", () => goToStep(i === STEP_COUNT-1 ? 0 : i+1));
+  nav.append(prev,next);
+  sec.appendChild(nav);
+});
+
+/* Flèches clavier (hors champs de saisie) */
+document.addEventListener("keydown", (e) => {
+  if(!$("authOverlay").classList.contains("hidden")) return;
+  const tag = document.activeElement.tagName;
+  if(tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+  if(e.key === "ArrowRight") goToStep(currentStep+1);
+  if(e.key === "ArrowLeft")  goToStep(currentStep-1);
+});
+
+/* Marquage « fait » dans le stepper quand tous les checkpoints d'une étape sont cochés */
+function refreshStepperDone(){
+  const done2 = ["cpE0","cpE1","cpE2"].every(id => $(id).checked);
+  const done3 = ["cpP0","cpP1","cpP2"].every(id => $(id).checked);
+  document.querySelector('#stepperList button[data-step="2"]').classList.toggle("done", done2);
+  document.querySelector('#stepperList button[data-step="3"]').classList.toggle("done", done3);
+}
+
+/* ============================================================
+   ÉTAPE 0 — bouton « je suis connecté » + QR code
+============================================================ */
+$("connectedBtn").addEventListener("click", function(){
+  state.connectedAvenirs = !state.connectedAvenirs;
+  this.classList.toggle("on", state.connectedAvenirs);
+  this.setAttribute("aria-pressed", String(state.connectedAvenirs));
+  this.innerHTML = (state.connectedAvenirs ? '<span aria-hidden="true">✓</span>' : '<span aria-hidden="true">☐</span>')
+    + " Je suis connecté·e à Avenir(s)";
+});
+
+let qrDone = false;
+/* URL encodée dans le QR : l'adresse publique si la page est ouverte en local
+   (file:// ou localhost), sinon l'adresse réelle de la page. */
+function capsuleUrl(){
+  const local = location.protocol === "file:" ||
+    /^(localhost|127\.|192\.168\.|10\.)/.test(location.hostname);
+  return local ? PUBLIC_URL : window.location.href.split("#")[0];
+}
+function initQRCode(){
+  if(qrDone) return;
+  qrDone = true;
+  const url = capsuleUrl();
+  const link = $("selfLink");
+  link.href = url;
+  link.textContent = url;
+  if(typeof QRCode !== "undefined"){
+    new QRCode($("qrcode"), { text:url, width:150, height:150, correctLevel: QRCode.CorrectLevel.M });
+  }else{
+    $("qrcode").textContent = "QR indisponible — utilisez le lien ci-dessous.";
+  }
+}
+
+/* ============================================================
+   CHECKPOINTS (étapes 2 et 3)
+============================================================ */
+document.querySelectorAll(".checkpoint input[type=checkbox]").forEach(cb => {
+  cb.addEventListener("change", function(){
+    this.closest(".checkpoint").classList.toggle("checked", this.checked);
+    refreshStepperDone();
+  });
+});
+
+/* ============================================================
+   DICTÉE VOCALE (Web Speech API, repli silencieux)
+============================================================ */
+(function setupDictation(){
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const buttons = document.querySelectorAll(".mic-btn[data-dictate]");
+  if(!SR){ buttons.forEach(b => b.style.display = "none"); return; }
+  let activeRec = null, activeBtn = null;
+
+  function stopRec(){
+    if(activeRec){ try{ activeRec.stop(); }catch(e){} }
+    if(activeBtn){ activeBtn.classList.remove("rec"); }
+    activeRec = null; activeBtn = null;
+  }
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      if(activeBtn === btn){ stopRec(); return; }
+      stopRec();
+      const target = $(btn.dataset.dictate);
+      const rec = new SR();
+      rec.lang = "fr-FR";
+      rec.continuous = true;
+      rec.interimResults = false;
+      rec.onresult = (ev) => {
+        let txt = "";
+        for(let i = ev.resultIndex; i < ev.results.length; i++){
+          if(ev.results[i].isFinal) txt += ev.results[i][0].transcript;
+        }
+        if(txt){
+          target.value = (target.value ? target.value.replace(/\s+$/,"") + " " : "") + txt.trim();
+          target.dispatchEvent(new Event("input"));
+        }
+      };
+      rec.onend = () => { if(activeBtn === btn) stopRec(); };
+      rec.onerror = () => stopRec();
+      try{
+        rec.start();
+        activeRec = rec; activeBtn = btn;
+        btn.classList.add("rec");
+      }catch(e){ stopRec(); }
+    });
+  });
+})();
+
+/* ============================================================
+   CAPTURES D'ÉCRAN JOINTES (collage Ctrl+V ou bouton 📷)
+============================================================ */
+function addImage(fieldId, file){
+  if(!file || !file.type || !file.type.startsWith("image/")) return;
+  const reader = new FileReader();
+  reader.onload = () => {
+    state.images[fieldId].push({
+      name: file.name || "capture",
+      type: file.type,
+      dataUrl: reader.result
+    });
+    renderThumbs(fieldId);
+  };
+  reader.readAsDataURL(file);
+}
+function renderThumbs(fieldId){
+  const box = $("thumbs-" + fieldId);
+  box.innerHTML = "";
+  state.images[fieldId].forEach((im, i) => {
+    const d = document.createElement("div");
+    d.className = "thumb";
+    const img = document.createElement("img");
+    img.src = im.dataUrl;
+    img.alt = "Capture jointe " + (i+1);
+    const x = document.createElement("button");
+    x.type = "button";
+    x.className = "no-print";
+    x.textContent = "✕";
+    x.setAttribute("aria-label","Retirer cette capture");
+    x.addEventListener("click", () => {
+      state.images[fieldId].splice(i,1);
+      renderThumbs(fieldId);
+    });
+    d.append(img, x);
+    box.appendChild(d);
+  });
+}
+/* Collage direct d'une image dans les champs concernés */
+Object.keys(state.images).forEach(id => {
+  $(id).addEventListener("paste", (e) => {
+    const items = (e.clipboardData && e.clipboardData.items) || [];
+    for(const it of items){
+      if(it.type && it.type.startsWith("image/")){
+        e.preventDefault();
+        addImage(id, it.getAsFile());
+      }
+    }
+  });
+});
+/* Bouton 📷 : sélecteur de fichier partagé */
+let attachTarget = null;
+document.querySelectorAll(".btn-attach").forEach(b => {
+  b.addEventListener("click", () => {
+    attachTarget = b.dataset.attach;
+    $("imgFileInput").value = "";
+    $("imgFileInput").click();
+  });
+});
+$("imgFileInput").addEventListener("change", function(){
+  if(attachTarget) [...this.files].forEach(f => addImage(attachTarget, f));
+});
+
+/* Pré-remplissage du mur depuis la fiche */
+$("ficheActivite").addEventListener("input", function(){
+  if(!$("wallActivite").value || $("wallActivite").dataset.auto !== "off"){
+    $("wallActivite").value = this.value;
+    $("wallActivite").dataset.auto = "on";
+  }
+});
+$("wallActivite").addEventListener("input", function(){ this.dataset.auto = "off"; });
+$("ficheNiveau").addEventListener("change", function(){
+  if(!$("wallNiveau").value) $("wallNiveau").value = this.value;
+});
+
+/* ============================================================
+   ÉTAPE 5 — PROGRAMMATION ANNUELLE
+============================================================ */
+const PLAN_MOIS = ["sept","oct","nov","déc","janv","févr","mars","avr","mai","juin"];
+const PLAN_ACTIVITES = {
+  "5e": [
+    "« Je découvre des métiers »",
+    "Rencontres avec des pros",
+    "Onisep Kiosque",
+    "Le journal de ma Cordée (Cordées de la Réussite)",
+    "JobIRL",
+    "L'aventure du vivant",
+    "Outil régional métiers & formations [À VÉRIFIER]"
+  ],
+  "4e": [
+    "Rencontres avec des pros",
+    "« Je découvre des métiers »",
+    "Préparer mon accès au monde professionnel",
+    "Onisep Kiosque",
+    "1 élève 1 stage",
+    "Le journal de ma Cordée",
+    "JobIRL",
+    "L'aventure du vivant"
+  ],
+  "3e": [
+    "Rencontres avec des pros",
+    "« Je découvre des métiers »",
+    "Préparer mon accès au monde professionnel",
+    "Journées portes ouvertes",
+    "Je découvre les MOOC d'orientation",
+    "1 élève 1 stage",
+    "Le journal de ma Cordée",
+    "Horizons 21",
+    "JobIRL",
+    "My Future",
+    "L'aventure du vivant"
+  ]
+};
+const PLAN_LIBRES = 2; // lignes « activité libre » par feuille
+
+function planRows(niv){
+  const rows = PLAN_ACTIVITES[niv].map((label, i) => ({ label, key: String(i) }));
+  for(let i = 0; i < PLAN_LIBRES; i++) rows.push({ label: null, key: "libre" + i });
+  return rows;
+}
+function buildPlanning(){
+  const wrap = $("planSheets");
+  Object.keys(PLAN_ACTIVITES).forEach((niv, idx) => {
+    const sheet = document.createElement("div");
+    sheet.className = "plan-sheet";
+    sheet.id = "sheet-" + niv;
+    if(idx > 0) sheet.style.display = "none";
+    const h3 = document.createElement("h3");
+    const tagWrap = document.createElement("span");
+    tagWrap.className = niv === "5e" ? "n5" : niv === "4e" ? "n4" : "n3";
+    tagWrap.innerHTML = '<span class="lvl-tag">' + niv + "</span>";
+    h3.append(tagWrap, "Programmation annuelle — " + niv);
+    const table = document.createElement("table");
+    table.className = "plan-table";
+    const thead = document.createElement("thead");
+    const hr = document.createElement("tr");
+    const th0 = document.createElement("th");
+    th0.scope = "col";
+    th0.textContent = "Activité";
+    hr.appendChild(th0);
+    PLAN_MOIS.forEach(m => {
+      const th = document.createElement("th");
+      th.scope = "col";
+      th.textContent = m;
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr);
+    const tbody = document.createElement("tbody");
+    planRows(niv).forEach(r => {
+      const tr = document.createElement("tr");
+      const td0 = document.createElement("td");
+      if(r.label === null){
+        const inp = document.createElement("input");
+        inp.type = "text";
+        inp.id = "pl-" + niv + "-" + r.key + "-label";
+        inp.placeholder = "Activité libre…";
+        inp.maxLength = 90;
+        inp.setAttribute("aria-label", "Activité libre (" + niv + ")");
+        td0.appendChild(inp);
+      }else{
+        td0.textContent = r.label;
+      }
+      tr.appendChild(td0);
+      PLAN_MOIS.forEach((m, mi) => {
+        const td = document.createElement("td");
+        const cb = document.createElement("input");
+        cb.type = "checkbox";
+        cb.id = "pl-" + niv + "-" + r.key + "-" + mi;
+        cb.setAttribute("aria-label", (r.label || "activité libre") + " en " + m + " (" + niv + ")");
+        td.appendChild(cb);
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+    table.append(thead, tbody);
+    sheet.append(h3, table);
+    wrap.appendChild(sheet);
+  });
+}
+function selectPlanTab(niv){
+  document.querySelectorAll(".plan-tabs button").forEach(b => {
+    b.setAttribute("aria-selected", String(b.dataset.plan === niv));
+  });
+  Object.keys(PLAN_ACTIVITES).forEach(n => {
+    $("sheet-" + n).style.display = n === niv ? "" : "none";
+  });
+}
+document.querySelectorAll(".plan-tabs button").forEach(b => {
+  b.addEventListener("click", () => selectPlanTab(b.dataset.plan));
+});
+/* Lignes cochées d'une feuille -> [{label, mois:[...]}] (pour l'export Word) */
+function planChecked(niv){
+  const out = [];
+  planRows(niv).forEach(r => {
+    const label = r.label !== null ? r.label
+      : $("pl-" + niv + "-" + r.key + "-label").value.trim();
+    const mois = PLAN_MOIS.filter((m, mi) => $("pl-" + niv + "-" + r.key + "-" + mi).checked);
+    if(label && mois.length) out.push({ label, mois });
+  });
+  return out;
+}
+/* Impression dédiée : uniquement les feuilles contenant au moins une coche */
+$("planPrintBtn").addEventListener("click", () => {
+  let any = false;
+  Object.keys(PLAN_ACTIVITES).forEach(n => {
+    const has = $("sheet-" + n).querySelector("input[type=checkbox]:checked") !== null;
+    $("sheet-" + n).classList.toggle("print-skip", !has);
+    if(has) any = true;
+  });
+  if(!any){
+    $("planStatus").textContent = "Cochez au moins un mois avant d'imprimer vos feuilles.";
+    return;
+  }
+  $("planStatus").textContent = "";
+  document.body.classList.add("print-planning");
+  window.print();
+});
+window.addEventListener("afterprint", () => document.body.classList.remove("print-planning"));
+
+/* ============================================================
+   MUR DE PROMO
+============================================================ */
+let wallTimer = null;
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+function renderWall(items){
+  const list = $("wallList");
+  $("wallEmpty").style.display = items.length ? "none" : "block";
+  list.innerHTML = items.map(it => {
+    const cls = it.niveau === "5e" ? "n5e" : it.niveau === "4e" ? "n4e" : it.niveau === "3e" ? "n3e" : "";
+    return '<div class="wall-item ' + cls + '">' +
+      '<div class="who"><b>' + escapeHtml(it.pseudo || "Anonyme") + '</b>' +
+      '<span class="chip">' + escapeHtml(it.niveau || "—") + '</span></div>' +
+      '<p>' + escapeHtml(it.activite || "") + '</p></div>';
+  }).join("");
+}
+async function refreshWall(){
+  if(state.degraded){ renderWall(state.wallLocal.slice().reverse()); return; }
+  try{
+    const rep = await apiGet("wall_list");
+    if(rep && rep.ok && Array.isArray(rep.items)){
+      renderWall(rep.items);
+      $("wallStatus").textContent = "🔄 Mur en direct — actualisé toutes les 10 s.";
+    }
+  }catch(err){
+    // bascule douce en mode local
+    $("wallStatus").textContent = "⚠ Serveur injoignable : affichage local uniquement.";
+    renderWall(state.wallLocal.slice().reverse());
+  }
+}
+function startWallPolling(){
+  refreshWall();
+  if(!wallTimer) wallTimer = setInterval(refreshWall, 10000);
+}
+function stopWallPolling(){
+  if(wallTimer){ clearInterval(wallTimer); wallTimer = null; }
+}
+
+$("wallForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const pseudo   = $("wallPseudo").value.trim();
+  const niveau   = $("wallNiveau").value;
+  const activite = $("wallActivite").value.trim();
+  if(!pseudo || !niveau || !activite){
+    $("wallStatus").textContent = "Complétez pseudo, niveau et activité avant de publier.";
+    return;
+  }
+  const entry = { pseudo, niveau, activite };
+  const btn = $("wallSubmit");
+  btn.disabled = true;
+  state.myPosts.push(entry);
+  if(state.degraded || !endpointConfigured()){
+    state.wallLocal.push(entry);
+    renderWall(state.wallLocal.slice().reverse());
+    $("wallStatus").textContent = "✅ Publié sur le mur local de ce poste (mode dégradé).";
+    btn.disabled = false;
+    return;
+  }
+  try{
+    const rep = await api({ action:"wall_post", pseudo, niveau, activite });
+    if(rep && rep.ok){
+      $("wallStatus").textContent = "✅ Publié ! Votre activité apparaît sur tous les écrans.";
+      refreshWall();
+    }else{
+      throw new Error((rep && rep.error) || "Réponse invalide");
+    }
+  }catch(err){
+    state.wallLocal.push(entry);
+    renderWall(state.wallLocal.slice().reverse());
+    $("wallStatus").textContent = "⚠ Serveur injoignable : publication gardée en local sur ce poste.";
+  }finally{
+    btn.disabled = false;
+  }
+});
+
+/* ============================================================
+   ÉTAPE 8 — EXPORT WORD ET IMPRESSION
+============================================================ */
+/* Récapitulatif au format Word : un .doc contenant du HTML stylé,
+   que Word et LibreOffice ouvrent nativement (aucune bibliothèque requise).
+   Avec captures jointes, le document est emballé en MHT (multipart MIME),
+   seul format HTML dans lequel Word affiche des images embarquées. */
+function buildRecapDoc(){
+  const d = new Date();
+  const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const multi = (v, vide) => v.trim() ? esc(v.trim()).replace(/\n/g,"<br>") : "<i>" + vide + "</i>";
+  const cb = (id, label) =>
+    "<li>" + ($(id).checked ? "☑" : "☐") + " " + label + "</li>";
+  const atts = []; // images à embarquer : {name, type, base64}
+  const imgsOf = (fieldId) => state.images[fieldId].map(im => {
+    const m = /^data:(image\/[\w.+-]+);base64,(.*)$/s.exec(im.dataUrl);
+    if(!m) return "";
+    const ext = (m[1].split("/")[1] || "png").replace("jpeg","jpg");
+    const name = "image" + String(atts.length + 1).padStart(3,"0") + "." + ext;
+    atts.push({ name, type: m[1], base64: m[2] });
+    return '<p><img src="' + name + '" style="max-width:460px"></p>';
+  }).join("");
+  const posts = state.myPosts.length
+    ? state.myPosts.map(p => "<li><b>" + esc(p.pseudo) + "</b> (" + esc(p.niveau) + ") : " + esc(p.activite) + "</li>").join("")
+    : "<li><i>(aucune publication)</i></li>";
+  const html = '<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">' +
+    "<title>Formation Avenir(s) — Récapitulatif</title><style>" +
+    "body{font-family:Calibri,Arial,sans-serif;font-size:11pt;color:#222;line-height:1.45}" +
+    "h1{font-size:17pt;color:#3a2c78;border-bottom:2px solid #3a2c78;padding-bottom:4pt}" +
+    "h2{font-size:13pt;color:#3a2c78;margin-top:14pt}" +
+    "ul{margin:4pt 0}li{margin-bottom:2pt}" +
+    ".meta{color:#555}.note{background:#f3f1fa;border-left:3pt solid #3a2c78;padding:6pt 10pt;margin:6pt 0}" +
+    "</style></head><body>" +
+    "<h1>Formation Avenir(s) — Mon récapitulatif</h1>" +
+    '<p class="meta">' + d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}) +
+    " — Compte : <b>" + esc(state.user || "—") + "</b>" + (state.degraded ? " (mode secours)" : "") +
+    " — Connecté à Avenir(s) via École Directe : " + (state.connectedAvenirs ? "oui" : "non") + "</p>" +
+    "<h2>Mission côté élève (démonstration)</h2><ul>" +
+    cb("cpE0","Test des centres d'intérêt") +
+    cb("cpE1","« Je découvre des métiers » (vidéos, quiz, jeux)") +
+    cb("cpE2","Dépôt dans le portfolio") + "</ul>" +
+    "<p><b>Ce qui me servira pour ma classe :</b></p>" +
+    '<div class="note">' + multi($("noteEleve").value, "(rien noté)") + "</div>" +
+    imgsOf("noteEleve") +
+    "<h2>Mission côté prof (espace accompagnateur)</h2><ul>" +
+    cb("cpP0","Suivi d'activité des élèves repéré") +
+    cb("cpP1","Banque d'activités clés en main ouverte") +
+    cb("cpP2","Modèle de progression de mon niveau repéré") + "</ul>" +
+    "<h2>Ma fiche d'activité</h2><ul>" +
+    "<li><b>Activité retenue :</b> " + (esc($("ficheActivite").value.trim()) || "—") + "</li>" +
+    "<li><b>Niveau visé :</b> " + ($("ficheNiveau").value || "—") + "</li></ul>" +
+    "<p><b>Quand et comment je l'intègre :</b></p>" +
+    '<div class="note">' + multi($("ficheQuand").value, "(non renseigné)") + "</div>" +
+    imgsOf("ficheQuand") +
+    planningDocHtml() +
+    "<h2>Mes publications au mur</h2><ul>" + posts + "</ul>" +
+    '<hr><p class="meta"><i>Capsule « Formation Avenir(s) » — document généré localement, aucune donnée stockée en ligne.</i></p>' +
+    "</body></html>";
+  return { html, atts };
+}
+/* Programmation annuelle pour l'export Word : liste lisible des coches */
+function planningDocHtml(){
+  const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  let out = "";
+  Object.keys(PLAN_ACTIVITES).forEach(niv => {
+    const items = planChecked(niv);
+    if(!items.length) return;
+    out += "<p><b>Niveau " + niv + "</b></p><ul>" +
+      items.map(it => "<li><b>" + esc(it.label) + "</b> : " + it.mois.join(", ") + "</li>").join("") +
+      "</ul>";
+  });
+  return out ? "<h2>Ma programmation annuelle</h2>" + out : "";
+}
+/* Emballage MHT (multipart/related) : HTML + images en parties MIME base64 */
+function buildMht(html, atts){
+  const b64utf8 = s => btoa(unescape(encodeURIComponent(s)));
+  const wrap76 = s => s.replace(/(.{76})/g, "$1\r\n");
+  const B = "----=_CAPSULE_RECAP";
+  let out =
+    "MIME-Version: 1.0\r\n" +
+    'Content-Type: multipart/related; type="text/html"; boundary="' + B + '"\r\n\r\n' +
+    "--" + B + "\r\n" +
+    'Content-Type: text/html; charset="utf-8"\r\n' +
+    "Content-Transfer-Encoding: base64\r\n" +
+    "Content-Location: recap.htm\r\n\r\n" +
+    wrap76(b64utf8(html)) + "\r\n";
+  atts.forEach(a => {
+    out += "--" + B + "\r\n" +
+      "Content-Type: " + a.type + "\r\n" +
+      "Content-Transfer-Encoding: base64\r\n" +
+      "Content-Location: " + a.name + "\r\n\r\n" +
+      wrap76(a.base64) + "\r\n";
+  });
+  return out + "--" + B + "--";
+}
+$("exportBtn").addEventListener("click", () => {
+  const { html, atts } = buildRecapDoc();
+  // Sans image : HTML simple (le BOM garantit les accents dans Word).
+  // Avec images : emballage MHT, requis pour que Word les affiche.
+  const blob = atts.length
+    ? new Blob([buildMht(html, atts)], { type:"application/msword" })
+    : new Blob(["\u{FEFF}", html], { type:"application/msword" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "formation-avenirs-recap.doc";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+});
+$("printBtn").addEventListener("click", () => window.print());
+
+/* ============================================================
+   CARTES NIVEAUX — accordéons
+============================================================ */
+document.querySelectorAll(".lvl-detail-btn").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const panel = $(btn.getAttribute("aria-controls"));
+    const open = panel.classList.toggle("open");
+    btn.setAttribute("aria-expanded", String(open));
+    btn.textContent = open ? "Replier" : "Voir tous les objectifs";
+  });
+});
+
+/* ============================================================
+   MINUTEUR DE PHASE
+============================================================ */
+let timerTotal = 600, timerLeft = 600, timerInt = null;
+function fmt(s){
+  const m = Math.floor(Math.abs(s)/60), x = Math.abs(s)%60;
+  return (s < 0 ? "-" : "") + String(m).padStart(2,"0") + ":" + String(x).padStart(2,"0");
+}
+function timerRender(){
+  $("timerDisplay").textContent = fmt(timerLeft);
+  $("timerWidget").classList.toggle("over", timerLeft <= 0);
+}
+function timerStartPause(){
+  if(timerInt){
+    clearInterval(timerInt); timerInt = null;
+    $("timerStart").textContent = "▶ Reprendre";
+  }else{
+    timerInt = setInterval(() => { timerLeft--; timerRender(); }, 1000);
+    $("timerStart").textContent = "⏸ Pause";
+  }
+}
+$("timerToggle").addEventListener("click", function(){
+  const w = $("timerWidget");
+  const open = w.classList.toggle("open");
+  this.setAttribute("aria-pressed", String(open));
+});
+$("timerClose").addEventListener("click", () => {
+  $("timerWidget").classList.remove("open");
+  $("timerToggle").setAttribute("aria-pressed","false");
+});
+$("timerStart").addEventListener("click", timerStartPause);
+$("timerReset").addEventListener("click", () => {
+  if(timerInt){ clearInterval(timerInt); timerInt = null; }
+  timerLeft = timerTotal;
+  $("timerStart").textContent = "▶ Lancer";
+  timerRender();
+});
+document.querySelectorAll(".timer-presets button").forEach(b => {
+  b.addEventListener("click", () => {
+    timerTotal = parseInt(b.dataset.min,10)*60;
+    timerLeft = timerTotal;
+    if(timerInt){ clearInterval(timerInt); timerInt = null; $("timerStart").textContent = "▶ Lancer"; }
+    timerRender();
+  });
+});
+timerRender();
+
+/* ============================================================
+   PLEIN ÉCRAN
+============================================================ */
+$("fsToggle").addEventListener("click", async function(){
+  try{
+    if(document.fullscreenElement){
+      await document.exitFullscreen();
+      this.setAttribute("aria-pressed","false");
+    }else{
+      await document.documentElement.requestFullscreen();
+      this.setAttribute("aria-pressed","true");
+    }
+  }catch(e){ /* refusé par le navigateur : on ignore */ }
+});
+
+/* ============================================================
+   INITIALISATION
+============================================================ */
+buildPlanning();
+goToStep(0);
+setAuthMode("login");
+$("authUser").focus();
+</script>
+</body>
+</html>
