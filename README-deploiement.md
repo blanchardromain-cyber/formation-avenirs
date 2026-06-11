@@ -125,6 +125,7 @@ Aucun réglage CORS supplémentaire n'est nécessaire.
 | 12 | **Captures d'écran jointes** | Étape 2 ou 4 : `Win+Maj+S` pour capturer, puis `Ctrl+V` dans le champ texte (ou bouton 📷) → vignette affichée, supprimable (✕), présente dans l'export Word et le PDF. | ☐ |
 | 13 | **Programmation annuelle** | Étape 5 : onglets 5e/4e/3e (pré-sélection selon la fiche), cocher des mois → « Imprimer mes feuilles » ne sort que les feuilles contenant des coches (paysage conseillé) ; les coches apparaissent en liste dans l'export Word et en grille dans le PDF global. | ☐ |
 | 14 | **Objectifs cochables** | Étape 1 : déplier une carte niveau → cocher des objectifs (sur un ou plusieurs niveaux) → ils apparaissent dans la section « Objectifs retenus par niveau » de l'export Word et, cochés, dans le PDF global. | ☐ |
+| 15 | **Vidéos + vignettes étape 2** | Étape 2 : les 4 mini-vidéos se lisent dans la page ; cocher un point de repérage fait apparaître sa ou ses vignettes (cliquables, plein écran dans un nouvel onglet) ; décocher les masque. | ☐ |
 
 ## Jour J — pense-bête animateur
 

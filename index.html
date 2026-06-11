@@ -283,6 +283,27 @@ body.degraded .badge-degrade{display:inline-block}
 .checkpoint .cp-desc{display:block;color:var(--ink-soft);font-size:.92rem;margin-top:.15rem}
 .link-row{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1rem}
 
+/* ===================== ÉTAPE 2 — BLOCS VIDÉO + VIGNETTES ===================== */
+.cp-block{margin-bottom:1.2rem}
+.cp-block .checkpoint{margin-bottom:0;border-radius:var(--radius) var(--radius) 0 0}
+.cp-media{
+  background:var(--card);border-radius:0 0 var(--radius) var(--radius);
+  box-shadow:var(--shadow);padding:1.1rem 1.25rem;border-top:1px solid #efedf8;
+}
+.cp-videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
+.cp-videos figure{margin:0}
+.cp-videos video{width:100%;aspect-ratio:16/9;border-radius:10px;background:#000;display:block}
+.cp-videos figcaption{font-size:.82rem;color:var(--ink-soft);margin-top:.35rem}
+.cp-reveal{display:none;margin-top:1rem;border-top:1px dashed #ddd9ee;padding-top:.9rem}
+.cp-reveal.shown{display:block;animation:fadeUp .4s ease}
+.reveal-title{margin:0 0 .6rem;font-weight:700;color:var(--ok);font-size:.95rem}
+.reveal-thumbs{display:flex;gap:.8rem;flex-wrap:wrap}
+.reveal-thumbs img{
+  height:130px;width:auto;border-radius:9px;border:1px solid #e0dcf0;
+  display:block;background:#fff;transition:transform .2s;
+}
+.reveal-thumbs a:hover img{transform:scale(1.03)}
+
 /* ===================== DICTÉE / CHAMPS ===================== */
 .field-mic{position:relative}
 .field-mic textarea,.field-mic input[type=text]{padding-right:3.1rem}
@@ -404,6 +425,8 @@ textarea{resize:vertical;min-height:90px}
   /* animation:none est indispensable : figée à son 1er état (opacity:0), elle rendait les pages blanches */
   section.step{display:block!important;animation:none!important;opacity:1!important;page-break-inside:avoid;margin-bottom:1.4rem}
   .card,.checkpoint,.level-card,.wall-item{box-shadow:none;border:1px solid #ccc}
+  .cp-media{box-shadow:none;border:1px solid #ccc;border-top:none}
+  video{display:none!important}
   .thumb img{height:auto;max-width:75mm}
   /* Feuilles de programmation : toutes visibles à l'impression globale */
   .plan-sheet{display:block!important;box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
@@ -708,27 +731,89 @@ textarea{resize:vertical;min-height:90px}
   <div class="step-head">
     <span class="step-kicker">Étape 2 · Mission côté élève</span>
     <h2 id="h-step2">Dans la peau d'un élève de 5e</h2>
-    <p class="lead">Démonstration en direct du parcours élève. Cochez chaque point au fur et à mesure que vous l'observez à l'écran.</p>
+    <p class="lead">Le parcours élève en mini-vidéos (captures réelles d'un compte 5e) : regardez, repérez l'élément montré, cochez-le — sa vignette apparaît.</p>
   </div>
 
   <div class="callout">
-    👀 <strong>Suivez la démonstration projetée</strong> (compte élève 5e). Ne vous connectez pas vous-même à ce compte.
+    🎬 <strong>Lancez chaque mini-vidéo à votre rythme</strong>, puis cochez l'élément repéré.
+    🎧 Pensez au casque, ou coupez le son.
   </div>
 
-  <div class="checkpoint" data-check="eleve-0">
-    <input type="checkbox" id="cpE0">
-    <label for="cpE0"><b>Le test des centres d'intérêt</b>
-      <span class="cp-desc">Comment l'élève découvre ses goûts et obtient un profil d'intérêts.</span></label>
+  <div class="cp-block">
+    <div class="checkpoint" data-check="eleve-0">
+      <input type="checkbox" id="cpE0">
+      <label for="cpE0"><b>Le test des centres d'intérêt</b>
+        <span class="cp-desc">Comment l'élève découvre ses goûts et obtient un profil d'intérêts.</span></label>
+    </div>
+    <div class="cp-media">
+      <div class="cp-videos no-print">
+        <figure>
+          <video controls preload="metadata" src="assets/etape2/video-ce-qui-m-interesse.mp4"></video>
+          <figcaption>🎬 « Ce qui m'intéresse » — le test en action</figcaption>
+        </figure>
+      </div>
+      <div class="cp-reveal" data-for="cpE0">
+        <p class="reveal-title">✓ Repéré ! Les activités associées sur Avenir(s) :</p>
+        <div class="reveal-thumbs">
+          <a href="assets/etape2/vignette-arbre-interets.jpg" target="_blank" rel="noopener">
+            <img src="assets/etape2/vignette-arbre-interets.jpg" alt="Activité Avenir(s) : je construis mon arbre d'intérêts" loading="lazy"></a>
+          <a href="assets/etape2/vignette-quiz-personnalite.jpg" target="_blank" rel="noopener">
+            <img src="assets/etape2/vignette-quiz-personnalite.jpg" alt="Activité Avenir(s) : explorer sa personnalité avec un quiz" loading="lazy"></a>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="checkpoint" data-check="eleve-1">
-    <input type="checkbox" id="cpE1">
-    <label for="cpE1"><b>« Je découvre des métiers » : vidéos, quiz et jeux</b>
-      <span class="cp-desc">Les contenus ludiques qui font explorer des métiers très variés.</span></label>
+
+  <div class="cp-block">
+    <div class="checkpoint" data-check="eleve-1">
+      <input type="checkbox" id="cpE1">
+      <label for="cpE1"><b>« Je découvre des métiers » : vidéos, quiz et jeux</b>
+        <span class="cp-desc">Les contenus ludiques qui font explorer des métiers très variés.</span></label>
+    </div>
+    <div class="cp-media">
+      <div class="cp-videos no-print">
+        <figure>
+          <video controls preload="metadata" src="assets/etape2/video-connaissez-vous-metiers.mp4"></video>
+          <figcaption>🎬 « Connaissez-vous tous les métiers du collège ? »</figcaption>
+        </figure>
+        <figure>
+          <video controls preload="metadata" src="assets/etape2/video-metiers-college.mp4"></video>
+          <figcaption>🎬 « Les métiers du collège » — l'activité côté élève</figcaption>
+        </figure>
+      </div>
+      <div class="cp-reveal" data-for="cpE1">
+        <p class="reveal-title">✓ Repéré ! Ce que l'élève voit sur Avenir(s) :</p>
+        <div class="reveal-thumbs">
+          <a href="assets/etape2/vignette-variete-metiers.jpg" target="_blank" rel="noopener">
+            <img src="assets/etape2/vignette-variete-metiers.jpg" alt="Série d'activités : explorer la variété des métiers" loading="lazy"></a>
+          <a href="assets/etape2/vignette-je-decouvre.png" target="_blank" rel="noopener">
+            <img src="assets/etape2/vignette-je-decouvre.png" alt="Bouton Je découvre des métiers" loading="lazy"></a>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="checkpoint" data-check="eleve-2">
-    <input type="checkbox" id="cpE2">
-    <label for="cpE2"><b>Le dépôt dans le portfolio</b>
-      <span class="cp-desc">Comment les découvertes de l'élève sont conservées dans son portfolio Avenir(s).</span></label>
+
+  <div class="cp-block">
+    <div class="checkpoint" data-check="eleve-2">
+      <input type="checkbox" id="cpE2">
+      <label for="cpE2"><b>Le dépôt dans le portfolio</b>
+        <span class="cp-desc">Comment les découvertes de l'élève sont conservées dans son portfolio Avenir(s).</span></label>
+    </div>
+    <div class="cp-media">
+      <div class="cp-videos no-print">
+        <figure>
+          <video controls preload="metadata" src="assets/etape2/video-portfolio.mp4"></video>
+          <figcaption>🎬 « Mon portfolio » — où tout se range</figcaption>
+        </figure>
+      </div>
+      <div class="cp-reveal" data-for="cpE2">
+        <p class="reveal-title">✓ Repéré ! L'onglet à retrouver :</p>
+        <div class="reveal-thumbs">
+          <a href="assets/etape2/vignette-portfolio-onglet.png" target="_blank" rel="noopener">
+            <img src="assets/etape2/vignette-portfolio-onglet.png" alt="Bandeau Avenir(s) avec l'onglet Mon portfolio" loading="lazy"></a>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="card field field-mic" style="margin-top:1.3rem">
@@ -1212,6 +1297,9 @@ function initQRCode(){
 document.querySelectorAll(".checkpoint input[type=checkbox]").forEach(cb => {
   cb.addEventListener("change", function(){
     this.closest(".checkpoint").classList.toggle("checked", this.checked);
+    // révèle la vignette associée (étape 2)
+    const rev = document.querySelector('.cp-reveal[data-for="' + this.id + '"]');
+    if(rev) rev.classList.toggle("shown", this.checked);
     refreshStepperDone();
   });
 });
