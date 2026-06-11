@@ -243,8 +243,11 @@ body.degraded .badge-degrade{display:inline-block}
   background:#faf9fe;border-top:1px solid #ece9f9;
 }
 .lvl-detail.open{max-height:600px}
-.lvl-detail ul{padding:1rem 1.3rem 1rem 2rem;margin:0;font-size:.93rem}
-.lvl-detail li{margin-bottom:.3rem}
+.lvl-detail ul{list-style:none;padding:1rem 1.3rem 1rem 1.1rem;margin:0;font-size:.93rem}
+.lvl-detail li{display:flex;gap:.55rem;align-items:flex-start;margin-bottom:.4rem}
+.lvl-detail input[type=checkbox]{width:1.05rem;height:1.05rem;margin-top:.12rem;flex:none;accent-color:var(--violet);cursor:pointer}
+.lvl-detail label{cursor:pointer}
+.lvl-detail li:has(input:checked) label{font-weight:600;color:var(--violet-dark)}
 .tools-details{margin-top:1.3rem}
 .tools-details summary{
   cursor:pointer;font-family:var(--font-title);font-weight:700;color:var(--violet-dark);
@@ -566,7 +569,7 @@ textarea{resize:vertical;min-height:90px}
   <div class="step-head">
     <span class="step-kicker">Étape 1 · Repères</span>
     <h2 id="h-step1">Ce que vos élèves font sur Avenir(s), niveau par niveau</h2>
-    <p class="lead">Trois parcours progressifs, de la découverte de soi en 5e à la préparation du stage et de l'orientation en 3e. Dépliez chaque carte pour la liste complète des objectifs.</p>
+    <p class="lead">Trois parcours progressifs, de la découverte de soi en 5e à la préparation du stage et de l'orientation en 3e. Dépliez chaque carte et <strong>cochez les objectifs que vous retenez</strong> — sur un ou plusieurs niveaux : ils seront repris dans votre export final.</p>
   </div>
 
   <div class="levels-grid">
@@ -662,7 +665,6 @@ textarea{resize:vertical;min-height:90px}
         <ul>
           <li>« Je découvre des métiers »</li>
           <li>Rencontres avec des pros</li>
-          <li>Onisep Kiosque</li>
           <li>Les Cordées de la Réussite — Le journal de ma Cordée</li>
           <li>JobIRL</li>
           <li>L'aventure du vivant</li>
@@ -675,7 +677,6 @@ textarea{resize:vertical;min-height:90px}
           <li>Rencontres avec des pros</li>
           <li>« Je découvre des métiers »</li>
           <li>Préparer mon accès au monde professionnel</li>
-          <li>Onisep Kiosque</li>
           <li>1 élève 1 stage</li>
           <li>Le journal de ma Cordée</li>
           <li>JobIRL</li>
@@ -1335,6 +1336,31 @@ $("ficheNiveau").addEventListener("change", function(){
 });
 
 /* ============================================================
+   ÉTAPE 1 — OBJECTIFS COCHABLES (repris dans l'export final)
+============================================================ */
+function buildObjectiveChecks(){
+  document.querySelectorAll(".lvl-detail").forEach(panel => {
+    const niv = panel.id.replace("detail-", ""); // 5e / 4e / 3e
+    panel.querySelectorAll("li").forEach((li, i) => {
+      const txt = li.textContent.trim();
+      li.textContent = "";
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.id = "obj-" + niv + "-" + i;
+      const lab = document.createElement("label");
+      lab.htmlFor = cb.id;
+      lab.textContent = txt;
+      li.append(cb, lab);
+    });
+  });
+}
+function objectivesChecked(niv){
+  return [...document.querySelectorAll("#detail-" + niv + " li")]
+    .filter(li => li.querySelector("input").checked)
+    .map(li => li.querySelector("label").textContent);
+}
+
+/* ============================================================
    ÉTAPE 5 — PROGRAMMATION ANNUELLE
 ============================================================ */
 const PLAN_MOIS = ["sept","oct","nov","déc","janv","févr","mars","avr","mai","juin"];
@@ -1342,7 +1368,6 @@ const PLAN_ACTIVITES = {
   "5e": [
     "« Je découvre des métiers »",
     "Rencontres avec des pros",
-    "Onisep Kiosque",
     "Le journal de ma Cordée (Cordées de la Réussite)",
     "JobIRL",
     "L'aventure du vivant",
@@ -1352,7 +1377,6 @@ const PLAN_ACTIVITES = {
     "Rencontres avec des pros",
     "« Je découvre des métiers »",
     "Préparer mon accès au monde professionnel",
-    "Onisep Kiosque",
     "1 élève 1 stage",
     "Le journal de ma Cordée",
     "JobIRL",
@@ -1595,6 +1619,7 @@ function buildRecapDoc(){
     '<p class="meta">' + d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}) +
     " — Compte : <b>" + esc(state.user || "—") + "</b>" + (state.degraded ? " (mode secours)" : "") +
     " — Connecté à Avenir(s) via École Directe : " + (state.connectedAvenirs ? "oui" : "non") + "</p>" +
+    objectifsDocHtml() +
     "<h2>Mission côté élève (démonstration)</h2><ul>" +
     cb("cpE0","Test des centres d'intérêt") +
     cb("cpE1","« Je découvre des métiers » (vidéos, quiz, jeux)") +
@@ -1617,6 +1642,18 @@ function buildRecapDoc(){
     '<hr><p class="meta"><i>Capsule « Formation Avenir(s) » — document généré localement, aucune donnée stockée en ligne.</i></p>' +
     "</body></html>";
   return { html, atts };
+}
+/* Objectifs cochés à l'étape 1, groupés par niveau (export Word) */
+function objectifsDocHtml(){
+  const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  let out = "";
+  ["5e","4e","3e"].forEach(niv => {
+    const items = objectivesChecked(niv);
+    if(!items.length) return;
+    out += "<p><b>Niveau " + niv + "</b></p><ul>" +
+      items.map(t => "<li>" + esc(t) + "</li>").join("") + "</ul>";
+  });
+  return out ? "<h2>Objectifs retenus par niveau</h2>" + out : "";
 }
 /* Programmation annuelle pour l'export Word : liste lisible des coches */
 function planningDocHtml(){
@@ -1747,6 +1784,7 @@ $("fsToggle").addEventListener("click", async function(){
 /* ============================================================
    INITIALISATION
 ============================================================ */
+buildObjectiveChecks();
 buildPlanning();
 goToStep(0);
 setAuthMode("login");
