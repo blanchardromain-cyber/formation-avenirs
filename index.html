@@ -290,10 +290,6 @@ body.degraded .badge-degrade{display:inline-block}
   background:var(--card);border-radius:0 0 var(--radius) var(--radius);
   box-shadow:var(--shadow);padding:1.1rem 1.25rem;border-top:1px solid #efedf8;
 }
-.cp-videos{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1rem}
-.cp-videos figure{margin:0}
-.cp-videos video{width:100%;aspect-ratio:16/9;border-radius:10px;background:#000;display:block}
-.cp-videos figcaption{font-size:.82rem;color:var(--ink-soft);margin-top:.35rem}
 .cp-reveal{display:none;margin-top:1rem;border-top:1px dashed #ddd9ee;padding-top:.9rem}
 .cp-reveal.shown{display:block;animation:fadeUp .4s ease}
 .reveal-title{margin:0 0 .6rem;font-weight:700;color:var(--ok);font-size:.95rem}
@@ -392,46 +388,68 @@ textarea{resize:vertical;min-height:90px}
 .res-card{display:flex;flex-direction:column;gap:.7rem}
 .res-card .btn{align-self:flex-start}
 
-/* ===================== MINUTEUR ===================== */
-#timerWidget{
-  position:fixed;right:1.1rem;bottom:1.1rem;z-index:60;background:#fff;
-  border-radius:16px;box-shadow:0 10px 40px rgba(20,15,50,.3);
-  padding:1rem 1.2rem;width:230px;display:none;
+/* ===================== FORMULAIRES — DIVERS ===================== */
+.field-duo{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+@media(max-width:480px){.field-duo{grid-template-columns:1fr}}
+
+/* ===================== ÉTAPE 2 — CAPSULE VIDÉO UNIQUE ===================== */
+.video-card video{
+  width:100%;max-width:880px;aspect-ratio:16/9;border-radius:10px;
+  background:#000;display:block;margin:0 auto;
 }
-#timerWidget.open{display:block}
-#timerWidget h3{margin:0 0 .5rem;font-size:.95rem;display:flex;justify-content:space-between;align-items:center}
-#timerWidget h3 button{background:none;border:none;font-size:1.1rem;color:var(--ink-soft)}
-#timerDisplay{
-  font-family:var(--font-title);font-weight:800;font-size:2.7rem;text-align:center;
-  letter-spacing:.02em;color:var(--violet-dark);font-variant-numeric:tabular-nums;
+.video-card .video-cap{font-size:.85rem;color:var(--ink-soft);text-align:center;margin:.6rem 0 0}
+/* Blocs média qui n'ont qu'une zone de révélation : invisibles tant que rien n'est coché */
+.cp-media.reveal-only:not(:has(.cp-reveal.shown)){display:none}
+.cp-media.reveal-only .cp-reveal{border-top:none;margin-top:0;padding-top:0}
+
+/* ===================== MUR — VUE FORMATEUR ===================== */
+.linklike{
+  background:none;border:none;color:var(--violet);font-weight:600;
+  text-decoration:underline;padding:0;font-size:.9rem;
 }
-#timerWidget.over #timerDisplay{color:var(--err);animation:blink 1s infinite}
-@keyframes blink{50%{opacity:.35}}
-.timer-presets{display:flex;gap:.4rem;justify-content:center;margin:.4rem 0 .6rem}
-.timer-presets button{
-  border:1.5px solid var(--violet-soft);background:#fff;border-radius:8px;
-  padding:.2rem .55rem;font-size:.82rem;font-weight:700;color:var(--violet-dark);
+.linklike:hover{color:var(--violet-dark)}
+.wall-author{
+  background:var(--violet-soft);border-radius:10px;padding:.55rem .9rem;
+  font-size:.92rem;margin:0 0 .9rem;
 }
-.timer-presets button:hover{background:var(--violet-soft)}
-.timer-controls{display:flex;gap:.5rem}
-.timer-controls .btn{flex:1;padding:.45rem;font-size:.85rem;justify-content:center}
+#formateurPanel .link-row{margin-top:.6rem}
+
+/* ===================== PAGE DE GARDE (impression uniquement) ===================== */
+#printCover{display:none}
 
 /* ===================== IMPRESSION ===================== */
 @media print{
-  header.app-header,nav.stepper,.nav-bottom,#timerWidget,.mic-btn,
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  header.app-header,nav.stepper,.nav-bottom,.mic-btn,
   .no-print,#authOverlay{display:none!important}
   body{background:#fff;font-size:11pt}
   main{max-width:none;padding:0}
+  /* Page de garde : première page, uniquement en impression */
+  #printCover{
+    display:flex!important;flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;min-height:255mm;break-after:page;page-break-after:always;
+  }
+  #printCover img{width:65%;max-width:150mm;margin-bottom:14mm}
+  #printCover h1{font-size:22pt;margin:0 0 16mm}
+  #printCover p{font-size:13pt;margin:.3rem 0}
+  #printCover .cover-meta{color:#555;font-size:11pt;margin-top:12mm}
   /* animation:none est indispensable : figée à son 1er état (opacity:0), elle rendait les pages blanches */
   section.step{display:block!important;animation:none!important;opacity:1!important;page-break-inside:avoid;margin-bottom:1.4rem}
   .card,.checkpoint,.level-card,.wall-item{box-shadow:none;border:1px solid #ccc}
   .cp-media{box-shadow:none;border:1px solid #ccc;border-top:none}
   video{display:none!important}
+  /* Images : jamais coupées, jamais débordantes, liens-images sans URL parasite */
+  img{max-width:100%;break-inside:avoid;page-break-inside:avoid}
   .thumb img{height:auto;max-width:75mm}
+  .reveal-thumbs{display:block}
+  .reveal-thumbs a{display:block;break-inside:avoid;page-break-inside:avoid;margin:0 0 5mm}
+  .reveal-thumbs img{height:auto;width:auto;max-width:150mm;border:1px solid #ccc}
+  a:has(img)::after{content:""!important}
   /* Feuilles de programmation : toutes visibles à l'impression globale */
   .plan-sheet{display:block!important;box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
   /* Mode « Imprimer mes feuilles » : uniquement les feuilles cochées, une par page */
   body.print-planning section.step{display:none!important}
+  body.print-planning #printCover{display:none!important}
   body.print-planning #step-5{display:block!important}
   body.print-planning .plan-sheet{page-break-after:always}
   body.print-planning .plan-sheet:last-child{page-break-after:auto}
@@ -468,6 +486,28 @@ textarea{resize:vertical;min-height:90px}
           <input id="authUser" type="text" autocomplete="username" required
                  maxlength="40" placeholder="ex. : prenom.nom">
         </div>
+        <div class="reg-only" hidden>
+          <div class="field-duo">
+            <div class="field">
+              <label for="authPrenom">Prénom</label>
+              <input id="authPrenom" type="text" autocomplete="given-name" maxlength="30">
+            </div>
+            <div class="field">
+              <label for="authNom">Nom</label>
+              <input id="authNom" type="text" autocomplete="family-name" maxlength="30">
+            </div>
+          </div>
+          <div class="field">
+            <label for="authNiveau">Niveau (votre classe de PP)</label>
+            <select id="authNiveau">
+              <option value="">— Choisir —</option>
+              <option value="5e">5e</option>
+              <option value="4e">4e</option>
+              <option value="3e">3e</option>
+              <option value="Autre">Autre</option>
+            </select>
+          </div>
+        </div>
         <div class="field">
           <label for="authPass">Mot de passe</label>
           <input id="authPass" type="password" autocomplete="current-password" required
@@ -491,6 +531,41 @@ textarea{resize:vertical;min-height:90px}
         </button>
         <p id="bypassMsg" class="auth-msg" role="status" aria-live="polite"></p>
       </details>
+    </div>
+
+    <!-- Phase 1 bis : complétion de profil (anciens comptes) -->
+    <div id="authPhaseProfile" hidden>
+      <h2>Encore un instant ✍️</h2>
+      <p class="sub">Votre compte date d'avant la mise à jour : complétez votre profil pour que vos contributions soient signées.</p>
+      <form id="profileForm" novalidate>
+        <div class="field-duo">
+          <div class="field">
+            <label for="profPrenom">Prénom</label>
+            <input id="profPrenom" type="text" autocomplete="given-name" maxlength="30" required>
+          </div>
+          <div class="field">
+            <label for="profNom">Nom</label>
+            <input id="profNom" type="text" autocomplete="family-name" maxlength="30" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="profNiveau">Niveau (votre classe de PP)</label>
+          <select id="profNiveau" required>
+            <option value="">— Choisir —</option>
+            <option value="5e">5e</option>
+            <option value="4e">4e</option>
+            <option value="3e">3e</option>
+            <option value="Autre">Autre</option>
+          </select>
+        </div>
+        <p id="profileMsg" class="auth-msg" role="status" aria-live="polite"></p>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center">
+          Enregistrer mon profil
+        </button>
+        <button type="button" id="profileSkip" class="btn btn-secondary" style="width:100%;justify-content:center;margin-top:.6rem">
+          Plus tard
+        </button>
+      </form>
     </div>
 
     <!-- Phase 2 : code capsule -->
@@ -526,7 +601,6 @@ textarea{resize:vertical;min-height:90px}
     </div>
     <span class="badge-degrade" title="Le serveur est injoignable : le mur fonctionne en local sur ce poste.">⚠ Mode dégradé</span>
     <div class="header-actions no-print">
-      <button class="btn-ghost" id="timerToggle" aria-pressed="false">⏱ Minuteur</button>
       <button class="btn-ghost" id="fsToggle" aria-pressed="false">⛶ Plein écran</button>
     </div>
   </div>
@@ -549,6 +623,15 @@ textarea{resize:vertical;min-height:90px}
     <li><button data-step="8">8 · Sauvegarde</button></li>
   </ol>
 </nav>
+
+<!-- ============ PAGE DE GARDE (impression uniquement) ============ -->
+<div id="printCover" aria-hidden="true">
+  <img src="assets/page-de-garde.png" alt="">
+  <h1>Formation Avenir(s)<br>Accompagner l'orientation au collège</h1>
+  <p><strong>Participant : <span id="coverParticipant">—</span></strong></p>
+  <p>Formateur : Romain Blanchard</p>
+  <p id="coverDate" class="cover-meta"></p>
+</div>
 
 <main>
 
@@ -731,12 +814,18 @@ textarea{resize:vertical;min-height:90px}
   <div class="step-head">
     <span class="step-kicker">Étape 2 · Mission côté élève</span>
     <h2 id="h-step2">Dans la peau d'un élève de 5e</h2>
-    <p class="lead">Le parcours élève en mini-vidéos (captures réelles d'un compte 5e) : regardez, repérez l'élément montré, cochez-le — sa vignette apparaît.</p>
+    <p class="lead">Une capsule vidéo (captures réelles d'un compte 5e) : regardez-la à votre rythme, repérez les trois éléments, cochez-les — leur vignette apparaît.</p>
   </div>
 
   <div class="callout">
-    🎬 <strong>Lancez chaque mini-vidéo à votre rythme</strong>, puis cochez l'élément repéré.
+    🎬 <strong>Lancez la capsule « Le point de vue de l'élève »</strong>, puis cochez chaque élément repéré ci-dessous.
     🎧 Pensez au casque, ou coupez le son.
+  </div>
+
+  <div class="card no-print video-card">
+    <h3>🎬 Le point de vue de l'élève</h3>
+    <video controls preload="metadata" src="assets/etape2/capsule-video-pov-eleve.mp4"></video>
+    <p class="video-cap">Le parcours complet d'un élève de 5e sur Avenir(s) : test des centres d'intérêt, découverte des métiers, portfolio.</p>
   </div>
 
   <div class="cp-block">
@@ -745,13 +834,7 @@ textarea{resize:vertical;min-height:90px}
       <label for="cpE0"><b>Le test des centres d'intérêt</b>
         <span class="cp-desc">Comment l'élève découvre ses goûts et obtient un profil d'intérêts.</span></label>
     </div>
-    <div class="cp-media">
-      <div class="cp-videos no-print">
-        <figure>
-          <video controls preload="metadata" src="assets/etape2/video-ce-qui-m-interesse.mp4"></video>
-          <figcaption>🎬 « Ce qui m'intéresse » — le test en action</figcaption>
-        </figure>
-      </div>
+    <div class="cp-media reveal-only">
       <div class="cp-reveal" data-for="cpE0">
         <p class="reveal-title">✓ Repéré ! Les activités associées sur Avenir(s) :</p>
         <div class="reveal-thumbs">
@@ -770,17 +853,7 @@ textarea{resize:vertical;min-height:90px}
       <label for="cpE1"><b>« Je découvre des métiers » : vidéos, quiz et jeux</b>
         <span class="cp-desc">Les contenus ludiques qui font explorer des métiers très variés.</span></label>
     </div>
-    <div class="cp-media">
-      <div class="cp-videos no-print">
-        <figure>
-          <video controls preload="metadata" src="assets/etape2/video-connaissez-vous-metiers.mp4"></video>
-          <figcaption>🎬 « Connaissez-vous tous les métiers du collège ? »</figcaption>
-        </figure>
-        <figure>
-          <video controls preload="metadata" src="assets/etape2/video-metiers-college.mp4"></video>
-          <figcaption>🎬 « Les métiers du collège » — l'activité côté élève</figcaption>
-        </figure>
-      </div>
+    <div class="cp-media reveal-only">
       <div class="cp-reveal" data-for="cpE1">
         <p class="reveal-title">✓ Repéré ! Ce que l'élève voit sur Avenir(s) :</p>
         <div class="reveal-thumbs">
@@ -799,13 +872,7 @@ textarea{resize:vertical;min-height:90px}
       <label for="cpE2"><b>Le dépôt dans le portfolio</b>
         <span class="cp-desc">Comment les découvertes de l'élève sont conservées dans son portfolio Avenir(s).</span></label>
     </div>
-    <div class="cp-media">
-      <div class="cp-videos no-print">
-        <figure>
-          <video controls preload="metadata" src="assets/etape2/video-portfolio.mp4"></video>
-          <figcaption>🎬 « Mon portfolio » — où tout se range</figcaption>
-        </figure>
-      </div>
+    <div class="cp-media reveal-only">
       <div class="cp-reveal" data-for="cpE2">
         <p class="reveal-title">✓ Repéré ! L'onglet à retrouver :</p>
         <div class="reveal-thumbs">
@@ -833,33 +900,66 @@ textarea{resize:vertical;min-height:90px}
   <div class="step-head">
     <span class="step-kicker">Étape 3 · Mission côté prof</span>
     <h2 id="h-step3">Votre espace accompagnateur</h2>
-    <p class="lead">À vous de jouer : sur votre poste, explorez votre espace Avenir(s) et validez les trois repérages ci-dessous.</p>
+    <p class="lead">À vous de jouer : sur votre poste, explorez votre espace Avenir(s) et validez les trois repérages — chaque coche fait apparaître le visuel correspondant.</p>
   </div>
 
   <div class="callout violet">
     💻 Travaillez <strong>sur votre propre espace accompagnateur</strong> (onglet Avenir(s) ouvert à l'étape 0).
   </div>
 
-  <div class="checkpoint" data-check="prof-0">
-    <input type="checkbox" id="cpP0">
-    <label for="cpP0"><b>J'ai repéré le suivi d'activité de mes élèves</b>
-      <span class="cp-desc">Où voir qui a fait quoi, et quand.</span></label>
+  <div class="cp-block">
+    <div class="checkpoint" data-check="prof-0">
+      <input type="checkbox" id="cpP0">
+      <label for="cpP0"><b>J'ai repéré le suivi d'activité de mes élèves</b>
+        <span class="cp-desc">Où voir qui a fait quoi, et quand.</span></label>
+    </div>
+    <div class="cp-media reveal-only">
+      <div class="cp-reveal" data-for="cpP0">
+        <p class="reveal-title">✓ Repéré ! L'écran de suivi sur Avenir(s) :</p>
+        <div class="reveal-thumbs">
+          <a href="assets/etape3/prof-suivi-activite.jpg" target="_blank" rel="noopener">
+            <img src="assets/etape3/prof-suivi-activite.jpg" alt="Écran Avenir(s) : suivi d'activité des élèves" loading="lazy"></a>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="checkpoint" data-check="prof-1">
-    <input type="checkbox" id="cpP1">
-    <label for="cpP1"><b>J'ai ouvert la banque d'activités clés en main</b>
-      <span class="cp-desc">Des séances prêtes à l'emploi à proposer à votre classe.</span></label>
+
+  <div class="cp-block">
+    <div class="checkpoint" data-check="prof-1">
+      <input type="checkbox" id="cpP1">
+      <label for="cpP1"><b>J'ai ouvert la banque d'activités clés en main</b>
+        <span class="cp-desc">Des séances prêtes à l'emploi à proposer à votre classe.</span></label>
+    </div>
+    <div class="cp-media reveal-only">
+      <div class="cp-reveal" data-for="cpP1">
+        <p class="reveal-title">✓ Repéré ! La banque d'activités pédagogiques :</p>
+        <div class="reveal-thumbs">
+          <a href="assets/etape3/prof-banque-activites.jpg" target="_blank" rel="noopener">
+            <img src="assets/etape3/prof-banque-activites.jpg" alt="Écran Avenir(s) : banque d'activités pédagogiques" loading="lazy"></a>
+        </div>
+      </div>
+    </div>
   </div>
-  <div class="checkpoint" data-check="prof-2">
-    <input type="checkbox" id="cpP2">
-    <label for="cpP2"><b>J'ai repéré le modèle de progression de mon niveau</b>
-      <span class="cp-desc">La trame annuelle proposée pour la 5e, la 4e ou la 3e.</span></label>
+
+  <div class="cp-block">
+    <div class="checkpoint" data-check="prof-2">
+      <input type="checkbox" id="cpP2">
+      <label for="cpP2"><b>J'ai repéré le modèle de progression de mon niveau</b>
+        <span class="cp-desc">La trame annuelle proposée pour la 5e, la 4e ou la 3e.</span></label>
+    </div>
+    <div class="cp-media reveal-only">
+      <div class="cp-reveal" data-for="cpP2">
+        <p class="reveal-title">✓ Repéré ! Le modèle de progression :</p>
+        <div class="reveal-thumbs">
+          <a href="assets/etape3/prof-modele-progression.jpg" target="_blank" rel="noopener">
+            <img src="assets/etape3/prof-modele-progression.jpg" alt="Écran Avenir(s) : modèle de progression par niveau" loading="lazy"></a>
+        </div>
+      </div>
+    </div>
   </div>
 
   <div class="link-row no-print">
     <a class="btn btn-primary" href="https://app.avenirs.onisep.fr/" target="_blank" rel="noopener">↗ Ouvrir Avenir(s)</a>
-    <a class="btn btn-outline" href="https://app.avenirs.onisep.fr/" target="_blank" rel="noopener">↗ Banque d'activités <span class="flag">À VÉRIFIER</span></a>
-    <a class="btn btn-outline" href="https://app.avenirs.onisep.fr/" target="_blank" rel="noopener">↗ Modèles de progression <span class="flag">À VÉRIFIER</span></a>
   </div>
 </section>
 
@@ -867,8 +967,12 @@ textarea{resize:vertical;min-height:90px}
 <section class="step" id="step-4" aria-labelledby="h-step4">
   <div class="step-head">
     <span class="step-kicker">Étape 4 · Production</span>
-    <h2 id="h-step4">Ma fiche : une activité pour ma classe</h2>
-    <p class="lead">Choisissez UNE activité Avenir(s) que vous mettrez en œuvre avec une de vos classes. Les champs texte acceptent la dictée vocale 🎙.</p>
+    <h2 id="h-step4">Ma fiche : je crée une activité pour ma classe</h2>
+    <p class="lead">Passez à l'action : créez maintenant UNE activité dans votre espace Avenir(s), puis décrivez-la ci-dessous. Les champs texte acceptent la dictée vocale 🎙.</p>
+  </div>
+
+  <div class="callout violet">
+    🛠 <strong>Dans votre espace accompagnateur Avenir(s)</strong> : ouvrez la banque d'activités, choisissez (ou adaptez) une activité et <strong>affectez-la à une de vos classes</strong>. C'est cette activité que vous décrivez ici.
   </div>
 
   <div class="card">
@@ -908,8 +1012,12 @@ textarea{resize:vertical;min-height:90px}
 <section class="step" id="step-5" aria-labelledby="h-step5">
   <div class="step-head">
     <span class="step-kicker">Étape 5 · Planifier</span>
-    <h2 id="h-step5">Ma programmation annuelle</h2>
-    <p class="lead">Replacez les activités Avenir(s) dans votre calendrier : sur la feuille de votre niveau, cochez le ou les mois visés pour chaque activité. Deux lignes libres accueillent vos activités maison.</p>
+    <h2 id="h-step5">Ma programmation annuelle — des hypothèses à discuter</h2>
+    <p class="lead">Sur la feuille de votre niveau, posez des <strong>hypothèses</strong> de programmation : cochez les mois envisagés pour chaque activité. Rien n'est figé — c'est une base de discussion.</p>
+  </div>
+
+  <div class="callout">
+    💬 <strong>Travaillez de concert :</strong> regroupez-vous avec les professeurs principaux de <strong>votre niveau</strong> et élaborez ces pistes ensemble, maintenant. Vous affinerez le programme plus tard dans l'année.
   </div>
 
   <div class="plan-tabs no-print" role="tablist" aria-label="Choisir un niveau">
@@ -930,27 +1038,31 @@ textarea{resize:vertical;min-height:90px}
   <div class="step-head">
     <span class="step-kicker">Étape 6 · Partage</span>
     <h2 id="h-step6">Le mur de la promo</h2>
-    <p class="lead">Publiez votre activité : le mur se met à jour en direct sur tous les postes et à l'écran projeté.</p>
+    <p class="lead">Postez <strong>UNE idée d'activité ou UN engagement concret</strong> que vous mettrez en œuvre avec vos classes. Le mur se met à jour en direct sur tous les postes.</p>
   </div>
 
   <div class="card no-print">
+    <p class="wall-author" id="wallAuthor" hidden>
+      ✍️ Vous publierez en tant que : <strong id="wallAuthorName">—</strong>
+    </p>
     <form id="wallForm" class="wall-form" novalidate>
-      <div class="field" style="margin:0">
-        <label for="wallPseudo">Pseudo</label>
-        <input type="text" id="wallPseudo" maxlength="30" required placeholder="Votre prénom">
+      <div class="field" style="margin:0" id="wallPseudoField">
+        <label for="wallPseudo">Prénom NOM</label>
+        <input type="text" id="wallPseudo" maxlength="62" required placeholder="Votre prénom et nom">
       </div>
-      <div class="field" style="margin:0">
+      <div class="field" style="margin:0" id="wallNiveauField">
         <label for="wallNiveau">Niveau</label>
         <select id="wallNiveau" required>
           <option value="">—</option>
           <option value="5e">5e</option>
           <option value="4e">4e</option>
           <option value="3e">3e</option>
+          <option value="Autre">Autre</option>
         </select>
       </div>
       <div class="field" style="margin:0">
-        <label for="wallActivite">Mon activité</label>
-        <input type="text" id="wallActivite" maxlength="160" required placeholder="Reprise automatique de votre fiche">
+        <label for="wallActivite">Mon idée ou mon engagement</label>
+        <input type="text" id="wallActivite" maxlength="160" required placeholder="Ex. : test des centres d'intérêt avec ma 5eB avant les vacances de Noël">
       </div>
       <button type="submit" class="btn btn-accent" id="wallSubmit">📌 Publier au mur</button>
     </form>
@@ -959,6 +1071,28 @@ textarea{resize:vertical;min-height:90px}
 
   <div id="wallList" class="wall-list" aria-live="polite" aria-label="Contributions du mur"></div>
   <p class="wall-empty" id="wallEmpty">Le mur est encore vide… soyez la première contribution ! 🎉</p>
+
+  <!-- Vue formateur : export du mur (code maître requis) -->
+  <p class="no-print" style="margin-top:1.4rem">
+    <button type="button" class="linklike" id="formateurToggle">🔑 Vue formateur</button>
+  </p>
+  <div class="card no-print" id="formateurUnlock" hidden>
+    <div class="field" style="max-width:320px">
+      <label for="formateurCode">Code maître</label>
+      <input type="password" id="formateurCode" maxlength="40" autocomplete="off">
+    </div>
+    <button type="button" class="btn btn-secondary" id="formateurCodeBtn">Déverrouiller</button>
+    <p id="formateurMsg" class="wall-status" role="status" aria-live="polite"></p>
+  </div>
+  <div class="card no-print" id="formateurPanel" hidden>
+    <h3>🧑‍🏫 Vue formateur — exporter le mur par niveau</h3>
+    <p style="font-size:.92rem;color:var(--ink-soft)">Texte brut regroupé par niveau (5e, 4e, 3e, puis « Autres »), prêt à coller dans un mail.</p>
+    <div class="link-row">
+      <button type="button" class="btn btn-primary" id="wallExportCopy">📋 Copier dans le presse-papiers</button>
+      <button type="button" class="btn btn-outline" id="wallExportTxt">⬇️ Télécharger en .txt</button>
+    </div>
+    <p id="wallExportStatus" class="wall-status" role="status" aria-live="polite"></p>
+  </div>
 </section>
 
 <!-- ============ ÉTAPE 7 — RESSOURCES ============ -->
@@ -979,13 +1113,10 @@ textarea{resize:vertical;min-height:90px}
       </a>
     </div>
     <div class="card res-card">
-      <h3>🧭 Ressources officielles Onisep</h3>
-      <p>Guides « accompagner avec Avenir(s) » et actualités de la plateforme.</p>
+      <h3>🧭 Ressources officielles</h3>
+      <p>La plateforme Avenir(s) et ses actualités.</p>
       <a class="btn btn-outline" target="_blank" rel="noopener" href="https://app.avenirs.onisep.fr/">
         ↗ Avenir(s) — plateforme
-      </a>
-      <a class="btn btn-outline" href="[LIEN_ONISEP_ACCOMPAGNER]" target="_blank" rel="noopener">
-        ↗ Onisep — accompagner les équipes <span class="flag">LIEN À COMPLÉTER</span>
       </a>
     </div>
   </div>
@@ -1027,22 +1158,6 @@ textarea{resize:vertical;min-height:90px}
 
 <input type="file" id="imgFileInput" accept="image/*" multiple hidden>
 
-<!-- ============ MINUTEUR FLOTTANT ============ -->
-<div id="timerWidget" role="region" aria-label="Minuteur de phase">
-  <h3>⏱ Minuteur de phase <button type="button" id="timerClose" aria-label="Fermer le minuteur">✕</button></h3>
-  <div id="timerDisplay">10:00</div>
-  <div class="timer-presets" role="group" aria-label="Durées prédéfinies">
-    <button type="button" data-min="3">3 min</button>
-    <button type="button" data-min="5">5 min</button>
-    <button type="button" data-min="10">10 min</button>
-    <button type="button" data-min="15">15 min</button>
-  </div>
-  <div class="timer-controls">
-    <button type="button" class="btn btn-primary" id="timerStart">▶ Lancer</button>
-    <button type="button" class="btn btn-secondary" id="timerReset">↺</button>
-  </div>
-</div>
-
 <script>
 "use strict";
 /* ============================================================
@@ -1068,12 +1183,21 @@ const PUBLIC_URL = "https://blanchardromain-cyber.github.io/formation-avenirs/";
 ============================================================ */
 const state = {
   user: null,          // identifiant connecté (ou "animateur" en bypass)
+  profile: null,       // {prenom, nom, niveau} issu du compte
+  lastHash: null,      // passhash de la session (pour compléter le profil)
+  animator: false,     // true si code maître saisi (vue formateur)
   degraded: false,     // true si serveur injoignable
   connectedAvenirs: false,
   wallLocal: [],       // mur local (mode dégradé + copie de mes posts)
   myPosts: [],         // mes publications (pour l'export)
   images: { noteEleve: [], ficheQuand: [] }  // captures d'écran jointes {name,type,dataUrl}
 };
+function profileComplete(p){
+  return !!(p && p.prenom && p.nom && p.niveau);
+}
+function profileName(p){
+  return p && p.prenom ? (p.prenom + " " + (p.nom || "").toUpperCase()).trim() : null;
+}
 const STEP_COUNT = 9;
 let currentStep = 0;
 
@@ -1123,6 +1247,7 @@ function setAuthMode(mode){
   $("tabRegister").setAttribute("aria-selected", String(mode === "register"));
   $("authSubmit").textContent = mode === "login" ? "Se connecter" : "Créer mon compte";
   $("authPass").setAttribute("autocomplete", mode === "login" ? "current-password" : "new-password");
+  document.querySelector(".reg-only").hidden = mode !== "register";
   setMsg("authMsg","","info");
 }
 function setMsg(id, text, kind){
@@ -1151,10 +1276,34 @@ $("authForm").addEventListener("submit", async (e) => {
   btn.innerHTML = '<span class="spin" aria-hidden="true"></span>&nbsp;Vérification…';
   try{
     const passhash = await sha256(password);
-    const action = authMode === "login" ? "login" : "register";
-    const rep = await api({ action, username, passhash });
+    state.lastHash = passhash;
+    let rep;
+    if(authMode === "register"){
+      const prenom = $("authPrenom").value.trim();
+      const nom = $("authNom").value.trim();
+      const niveau = $("authNiveau").value;
+      if(!prenom || !nom || !niveau){
+        setMsg("authMsg","Complétez prénom, nom et niveau pour créer votre compte.","err");
+        btn.disabled = false;
+        btn.textContent = "Créer mon compte";
+        return;
+      }
+      rep = await api({ action:"register", username, passhash, prenom, nom, niveau });
+      if(rep && rep.ok) state.profile = { prenom, nom, niveau };
+    }else{
+      rep = await api({ action:"login", username, passhash });
+      if(rep && rep.ok) state.profile = rep.profile || null;
+    }
     if(rep && rep.ok){
-      enterGate(username);
+      // Compte ancien sans profil : proposer de le compléter (sans bloquer)
+      if(authMode === "login" && !profileComplete(state.profile)){
+        state.user = username;
+        $("authPhaseAccount").hidden = true;
+        $("authPhaseProfile").hidden = false;
+        $("profPrenom").focus();
+      }else{
+        enterGate(username);
+      }
     }else{
       const msg = (rep && rep.error) ? rep.error :
         (authMode === "login" ? "Identifiant ou mot de passe incorrect." : "Inscription impossible.");
@@ -1175,11 +1324,37 @@ $("bypassBtn").addEventListener("click", () => {
   const v = $("bypassInput").value.trim();
   if(v && v === MASTER_BYPASS){
     state.degraded = true;
+    state.animator = true;
     document.body.classList.add("degraded");
     enterGate($("authUser").value.trim() || "animateur");
   }else{
     setMsg("bypassMsg","Code maître incorrect.","err");
   }
+});
+
+/* Phase 1 bis : complétion de profil pour les comptes antérieurs à la V2 */
+$("profileForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const prenom = $("profPrenom").value.trim();
+  const nom = $("profNom").value.trim();
+  const niveau = $("profNiveau").value;
+  if(!prenom || !nom || !niveau){
+    setMsg("profileMsg","Complétez les trois champs (ou cliquez sur « Plus tard »).","err");
+    return;
+  }
+  // Enregistrement serveur en « meilleur effort » : même si le backend
+  // n'est pas joignable (ou pas encore en V2), le profil sert pour la séance.
+  try{
+    await api({ action:"profile_update", username: state.user,
+                passhash: state.lastHash, prenom, nom, niveau });
+  }catch(err){ /* profil conservé en mémoire pour la session */ }
+  state.profile = { prenom, nom, niveau };
+  $("authPhaseProfile").hidden = true;
+  enterGate(state.user);
+});
+$("profileSkip").addEventListener("click", () => {
+  $("authPhaseProfile").hidden = true;
+  enterGate(state.user);
 });
 
 /* Phase 2 : code capsule */
@@ -1196,12 +1371,47 @@ $("gateForm").addEventListener("submit", (e) => {
   if(code === ACCESS_CODE.toUpperCase()){
     $("authOverlay").classList.add("hidden");
     document.body.focus();
-    $("wallPseudo").value = state.user === "animateur" ? "" : state.user;
+    applyProfileToUI();
     initQRCode();
   }else{
     setMsg("gateMsg","Code incorrect — regardez l'écran projeté 😉","err");
     $("gateInput").select();
   }
+});
+
+/* ============================================================
+   PROFIL → INTERFACE (mur signé + page de garde d'impression)
+============================================================ */
+function applyProfileToUI(){
+  const name = profileName(state.profile);
+  if(profileComplete(state.profile)){
+    $("wallPseudo").value = name;
+    $("wallNiveau").value = state.profile.niveau;
+    $("wallPseudoField").hidden = true;
+    $("wallNiveauField").hidden = true;
+    $("wallAuthorName").textContent = name + " · " + state.profile.niveau;
+    $("wallAuthor").hidden = false;
+    if(!$("ficheNiveau").value && state.profile.niveau !== "Autre"){
+      $("ficheNiveau").value = state.profile.niveau;
+    }
+  }else{
+    $("wallPseudo").value = state.user === "animateur" ? "" : (state.user || "");
+  }
+  if(state.animator) unlockFormateur();
+  fillCover();
+}
+/* Page de garde : participant + date du jour en français */
+function fillCover(){
+  const name = profileName(state.profile) || state.user || "—";
+  $("coverParticipant").textContent = name;
+  const d = new Date().toLocaleDateString("fr-FR",
+    { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+  $("coverDate").textContent = d.charAt(0).toUpperCase() + d.slice(1);
+}
+window.addEventListener("beforeprint", () => {
+  fillCover();
+  // force le chargement des images révélées différées avant impression
+  document.querySelectorAll(".cp-reveal.shown img[loading]").forEach(im => { im.loading = "eager"; });
 });
 
 /* ============================================================
@@ -1671,6 +1881,73 @@ $("wallForm").addEventListener("submit", async (e) => {
 });
 
 /* ============================================================
+   VUE FORMATEUR — export du mur par niveau (code maître requis)
+============================================================ */
+function unlockFormateur(){
+  state.animator = true;
+  $("formateurUnlock").hidden = true;
+  $("formateurPanel").hidden = false;
+}
+$("formateurToggle").addEventListener("click", () => {
+  if(state.animator){ unlockFormateur(); return; }
+  $("formateurUnlock").hidden = !$("formateurUnlock").hidden;
+  if(!$("formateurUnlock").hidden) $("formateurCode").focus();
+});
+$("formateurCodeBtn").addEventListener("click", () => {
+  if($("formateurCode").value.trim() === MASTER_BYPASS){
+    $("formateurCode").value = "";
+    unlockFormateur();
+  }else{
+    $("formateurMsg").textContent = "Code maître incorrect.";
+  }
+});
+/* Texte brut groupé par niveau, au gabarit exact (collage direct dans un mail) */
+function buildWallExport(items){
+  const groups = { "5e": [], "4e": [], "3e": [], "Autre": [] };
+  // items arrive du plus récent au plus ancien : on remet en ordre chronologique
+  items.slice().reverse().forEach(it => {
+    const g = groups[it.niveau] ? it.niveau : "Autre";
+    groups[g].push("• " + (it.pseudo || "Anonyme") + " — " + (it.activite || ""));
+  });
+  const blocs = [
+    "=== NIVEAU 5e ===\n" + groups["5e"].join("\n"),
+    "=== NIVEAU 4e ===\n" + groups["4e"].join("\n"),
+    "=== NIVEAU 3e ===\n" + groups["3e"].join("\n")
+  ];
+  if(groups["Autre"].length) blocs.push("=== AUTRES ===\n" + groups["Autre"].join("\n"));
+  return blocs.map(b => b.replace(/\n$/,"")).join("\n\n");
+}
+async function getWallItems(){
+  if(state.degraded || !endpointConfigured()) return state.wallLocal.slice().reverse();
+  try{
+    const rep = await apiGet("wall_list");
+    if(rep && rep.ok && Array.isArray(rep.items)) return rep.items;
+  }catch(err){ /* repli local */ }
+  return state.wallLocal.slice().reverse();
+}
+$("wallExportCopy").addEventListener("click", async () => {
+  const txt = buildWallExport(await getWallItems());
+  try{
+    await navigator.clipboard.writeText(txt);
+    $("wallExportStatus").textContent = "✅ Copié ! Collez directement dans votre mail.";
+  }catch(err){
+    $("wallExportStatus").textContent = "⚠ Copie bloquée par le navigateur : utilisez « Télécharger en .txt ».";
+  }
+});
+$("wallExportTxt").addEventListener("click", async () => {
+  const txt = buildWallExport(await getWallItems());
+  const blob = new Blob(["\u{FEFF}", txt], { type:"text/plain;charset=utf-8" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob);
+  a.download = "mur-formation-avenirs.txt";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  $("wallExportStatus").textContent = "✅ Fichier .txt téléchargé.";
+});
+
+/* ============================================================
    ÉTAPE 8 — EXPORT WORD ET IMPRESSION
 ============================================================ */
 /* Récapitulatif au format Word : un .doc contenant du HTML stylé,
@@ -1705,7 +1982,9 @@ function buildRecapDoc(){
     "</style></head><body>" +
     "<h1>Formation Avenir(s) — Mon récapitulatif</h1>" +
     '<p class="meta">' + d.toLocaleDateString("fr-FR") + " " + d.toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit"}) +
-    " — Compte : <b>" + esc(state.user || "—") + "</b>" + (state.degraded ? " (mode secours)" : "") +
+    " — Participant : <b>" + esc(profileName(state.profile) || state.user || "—") + "</b>" +
+    (state.profile && state.profile.niveau ? " (" + esc(state.profile.niveau) + ")" : "") +
+    (state.degraded ? " (mode secours)" : "") +
     " — Connecté à Avenir(s) via École Directe : " + (state.connectedAvenirs ? "oui" : "non") + "</p>" +
     objectifsDocHtml() +
     "<h2>Mission côté élève (démonstration)</h2><ul>" +
@@ -1806,53 +2085,6 @@ document.querySelectorAll(".lvl-detail-btn").forEach(btn => {
     btn.textContent = open ? "Replier" : "Voir tous les objectifs";
   });
 });
-
-/* ============================================================
-   MINUTEUR DE PHASE
-============================================================ */
-let timerTotal = 600, timerLeft = 600, timerInt = null;
-function fmt(s){
-  const m = Math.floor(Math.abs(s)/60), x = Math.abs(s)%60;
-  return (s < 0 ? "-" : "") + String(m).padStart(2,"0") + ":" + String(x).padStart(2,"0");
-}
-function timerRender(){
-  $("timerDisplay").textContent = fmt(timerLeft);
-  $("timerWidget").classList.toggle("over", timerLeft <= 0);
-}
-function timerStartPause(){
-  if(timerInt){
-    clearInterval(timerInt); timerInt = null;
-    $("timerStart").textContent = "▶ Reprendre";
-  }else{
-    timerInt = setInterval(() => { timerLeft--; timerRender(); }, 1000);
-    $("timerStart").textContent = "⏸ Pause";
-  }
-}
-$("timerToggle").addEventListener("click", function(){
-  const w = $("timerWidget");
-  const open = w.classList.toggle("open");
-  this.setAttribute("aria-pressed", String(open));
-});
-$("timerClose").addEventListener("click", () => {
-  $("timerWidget").classList.remove("open");
-  $("timerToggle").setAttribute("aria-pressed","false");
-});
-$("timerStart").addEventListener("click", timerStartPause);
-$("timerReset").addEventListener("click", () => {
-  if(timerInt){ clearInterval(timerInt); timerInt = null; }
-  timerLeft = timerTotal;
-  $("timerStart").textContent = "▶ Lancer";
-  timerRender();
-});
-document.querySelectorAll(".timer-presets button").forEach(b => {
-  b.addEventListener("click", () => {
-    timerTotal = parseInt(b.dataset.min,10)*60;
-    timerLeft = timerTotal;
-    if(timerInt){ clearInterval(timerInt); timerInt = null; $("timerStart").textContent = "▶ Lancer"; }
-    timerRender();
-  });
-});
-timerRender();
 
 /* ============================================================
    PLEIN ÉCRAN

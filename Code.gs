@@ -3,12 +3,17 @@
  * Formation Avenir(s) — Backend unique (comptes + mur de promo)
  * ============================================================
  * Web App Google Apps Script lié à un Google Sheet à 2 onglets :
- *   - "Comptes" : colonnes A=identifiant, B=passhash (SHA-256), C=date
- *   - "Mur"     : colonnes A=date, B=pseudo, C=niveau, D=activite
+ *   - "Comptes" : A=identifiant, B=passhash (SHA-256), C=date,
+ *                 D=prenom, E=nom, F=niveau (5e/4e/3e/Autre)
+ *   - "Mur"     : A=date, B=pseudo (Prénom NOM), C=niveau, D=activite
  *
  * Contrat JSON (POST, corps = JSON.stringify, Content-Type text/plain) :
- *   {action:"register", username, passhash} -> {ok:true} | {ok:false, error}
- *   {action:"login",    username, passhash} -> {ok:true} | {ok:false, error}
+ *   {action:"register", username, passhash, prenom, nom, niveau}
+ *       -> {ok:true} | {ok:false, error}
+ *   {action:"login", username, passhash}
+ *       -> {ok:true, profile:{prenom,nom,niveau}} | {ok:false, error}
+ *   {action:"profile_update", username, passhash, prenom, nom, niveau}
+ *       -> {ok:true} | {ok:false, error}   (complète un compte d'avant la V2)
  *   {action:"wall_post", pseudo, niveau, activite} -> {ok:true}
  *   {action:"wall_list"} -> {ok:true, items:[...]}
  * wall_list est aussi disponible en GET : ?action=wall_list
@@ -42,11 +47,12 @@ function doPost(e) {
 
   try {
     switch (data.action) {
-      case "register":  return actionRegister(data);
-      case "login":     return actionLogin(data);
-      case "wall_post": return actionWallPost(data);
-      case "wall_list": return actionWallList();
-      default:          return jsonOut({ ok: false, error: "Action inconnue." });
+      case "register":       return actionRegister(data);
+      case "login":          return actionLogin(data);
+      case "profile_update": return actionProfileUpdate(data);
+      case "wall_post":      return actionWallPost(data);
+      case "wall_list":      return actionWallList();
+      default:               return jsonOut({ ok: false, error: "Action inconnue." });
     }
   } catch (err) {
     return jsonOut({ ok: false, error: "Erreur serveur : " + err.message });
@@ -85,7 +91,10 @@ function actionRegister(data) {
   if (findAccountRow(sheet, username) !== -1) {
     return jsonOut({ ok: false, error: "Cet identifiant est déjà pris." });
   }
-  sheet.appendRow([username, passhash.toLowerCase(), new Date()]);
+  sheet.appendRow([
+    username, passhash.toLowerCase(), new Date(),
+    clean(data.prenom, 30), clean(data.nom, 30), cleanNiveau(data.niveau)
+  ]);
   return jsonOut({ ok: true });
 }
 
@@ -105,18 +114,41 @@ function actionLogin(data) {
   if (stored !== passhash.toLowerCase()) {
     return jsonOut({ ok: false, error: "Identifiant ou mot de passe incorrect." });
   }
+  // Profil (colonnes D-F) : vide pour les comptes d'avant la V2 — le client
+  // proposera alors de le compléter via profile_update.
+  var prof = sheet.getRange(row, 4, 1, 3).getValues()[0];
+  return jsonOut({ ok: true, profile: {
+    prenom: String(prof[0] || ""),
+    nom: String(prof[1] || ""),
+    niveau: String(prof[2] || "")
+  }});
+}
+
+/** Complète les colonnes profil d'un compte existant (authentifié par le hash). */
+function actionProfileUpdate(data) {
+  var username = clean(data.username, 40);
+  var passhash = clean(data.passhash, 64);
+  var sheet = getSheet(SHEET_COMPTES);
+  var row = findAccountRow(sheet, username);
+  if (row === -1) {
+    return jsonOut({ ok: false, error: "Compte introuvable." });
+  }
+  var stored = String(sheet.getRange(row, 2).getValue()).toLowerCase();
+  if (!passhash || stored !== passhash.toLowerCase()) {
+    return jsonOut({ ok: false, error: "Authentification invalide." });
+  }
+  sheet.getRange(row, 4, 1, 3).setValues([[
+    clean(data.prenom, 30), clean(data.nom, 30), cleanNiveau(data.niveau)
+  ]]);
   return jsonOut({ ok: true });
 }
 
 function actionWallPost(data) {
-  var pseudo = clean(data.pseudo, 30);
-  var niveau = clean(data.niveau, 5);
+  var pseudo = clean(data.pseudo, 62);
+  var niveau = cleanNiveau(data.niveau);
   var activite = clean(data.activite, FIELD_MAX);
   if (!pseudo || !activite) {
     return jsonOut({ ok: false, error: "Pseudo et activité sont requis." });
-  }
-  if (["5e", "4e", "3e"].indexOf(niveau) === -1) {
-    niveau = "—";
   }
   getSheet(SHEET_MUR).appendRow([new Date(), pseudo, niveau, activite]);
   return jsonOut({ ok: true });
@@ -169,6 +201,12 @@ function findAccountRow(sheet, username) {
     }
   }
   return -1;
+}
+
+/** Normalise un niveau : 5e / 4e / 3e / Autre. */
+function cleanNiveau(value) {
+  var n = clean(value, 10);
+  return ["5e", "4e", "3e", "Autre"].indexOf(n) !== -1 ? n : "Autre";
 }
 
 /** Nettoie une valeur : chaîne, sans retour ligne, tronquée. */

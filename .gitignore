@@ -12,3 +12,4 @@ _*.txt
 _*.pdf
 _*.png
 !logo-college.png
+*.txt
