@@ -420,11 +420,17 @@ textarea{resize:vertical;min-height:90px}
 /* ===================== IMPRESSION ===================== */
 @media print{
   *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+
+  /* --- Éléments masqués à l'impression --- */
   header.app-header,nav.stepper,.nav-bottom,.mic-btn,
-  .no-print,#authOverlay{display:none!important}
+  .no-print,#authOverlay,
+  /* Étape 8 (Sauvegarde) entièrement supprimée du PDF */
+  #step-8{display:none!important}
+
   body{background:#fff;font-size:11pt}
   main{max-width:none;padding:0}
-  /* Page de garde : première page, uniquement en impression */
+
+  /* Page de garde */
   #printCover{
     display:flex!important;flex-direction:column;align-items:center;justify-content:center;
     text-align:center;min-height:255mm;break-after:page;page-break-after:always;
@@ -433,37 +439,54 @@ textarea{resize:vertical;min-height:90px}
   #printCover h1{font-size:22pt;margin:0 0 16mm}
   #printCover p{font-size:13pt;margin:.3rem 0}
   #printCover .cover-meta{color:#555;font-size:11pt;margin-top:12mm}
-  /* animation:none est indispensable : figée à son 1er état (opacity:0), elle rendait les pages blanches */
+
+  /* Toutes les étapes visibles (animation désactivée sinon opacity:0 = page blanche) */
   section.step{display:block!important;animation:none!important;opacity:1!important;page-break-inside:avoid;margin-bottom:1.4rem}
+
   .card,.checkpoint,.level-card,.wall-item{box-shadow:none;border:1px solid #ccc}
-  .cp-media{box-shadow:none;border:1px solid #ccc;border-top:none}
+
+  /* Vidéo : jamais imprimée */
   video{display:none!important}
-  /* Images : jamais coupées, jamais débordantes, liens-images sans URL parasite */
-  img{max-width:100%;break-inside:avoid;page-break-inside:avoid}
-  .thumb img{height:auto;max-width:75mm}
-  /* Vignettes Avenir(s) : forcer l'affichage de TOUS les blocs reveal en impression,
-     qu'ils soient cochés ou non — les cases cochées affichent leur visuel,
-     les autres affichent au moins leur titre de révélation */
+
+  /* -------------------------------------------------------
+     FIX VIGNETTES AVENIR(S) — étapes 2 et 3
+     .cp-reveal est display:none par défaut, .shown le rend
+     visible via JS. En impression on force TOUT à s'afficher,
+     qu'une case soit cochée ou non.
+  ------------------------------------------------------- */
+  .cp-media{display:block!important;box-shadow:none;border:1px solid #ccc;border-top:none}
   .cp-media.reveal-only{display:block!important}
-  .cp-reveal{display:block!important}
-  .reveal-thumbs{display:flex!important;flex-wrap:wrap;gap:5mm}
-  .reveal-thumbs a{display:block;break-inside:avoid;page-break-inside:avoid;margin:0 0 5mm}
-  .reveal-thumbs img{height:auto!important;width:auto;max-width:150mm;border:1px solid #ccc}
-  a:has(img)::after{content:""!important}
-  /* Captures jointes (étapes 3 et 4) : forcer l'affichage des vignettes utilisateur */
+  .cp-reveal{display:block!important;border-top:none!important;margin-top:.5rem!important;padding-top:.5rem!important}
+  .reveal-title{display:block!important}
+  .reveal-thumbs{display:flex!important;flex-wrap:wrap;gap:5mm;margin-top:3mm}
+  .reveal-thumbs a{display:block;break-inside:avoid;page-break-inside:avoid;margin:0 0 4mm}
+  .reveal-thumbs img{display:block!important;height:auto!important;width:auto!important;max-width:130mm;border:1px solid #ccc}
+
+  /* -------------------------------------------------------
+     FIX CAPTURES JOINTES (étapes 3 et 4)
+     .thumbs:empty{display:none} est correct mais
+     .thumb img avait height:92px fixe → écrasé ici
+  ------------------------------------------------------- */
   .thumbs{display:flex!important;flex-wrap:wrap;gap:5mm;margin-top:4mm}
   .thumb{display:block!important;break-inside:avoid;page-break-inside:avoid}
-  .thumb img{height:auto!important;max-width:75mm;border:1px solid #ccc}
-  /* Feuilles de programmation : toutes visibles à l'impression globale */
+  .thumb img{display:block!important;height:auto!important;max-width:100mm;border:1px solid #ccc}
+
+  /* Images génériques */
+  img{max-width:100%;break-inside:avoid;page-break-inside:avoid}
+  a:has(img)::after{content:""!important}
+
+  /* Feuilles de programmation */
+  .lvl-detail{max-height:none!important}
   .plan-sheet{display:block!important;box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
-  /* Mode « Imprimer mes feuilles » : uniquement les feuilles cochées, une par page */
+
+  /* Mode « Imprimer mes feuilles » uniquement */
   body.print-planning section.step{display:none!important}
   body.print-planning #printCover{display:none!important}
   body.print-planning #step-5{display:block!important}
   body.print-planning .plan-sheet{page-break-after:always}
   body.print-planning .plan-sheet:last-child{page-break-after:auto}
   body.print-planning .plan-sheet.print-skip{display:none!important}
-  .lvl-detail{max-height:none!important}
+
   .step-head h2{font-size:15pt}
   a::after{content:" (" attr(href) ")";font-size:.78em;color:#555;word-break:break-all}
   .qr-wrap a::after{content:""}
@@ -1419,8 +1442,15 @@ function fillCover(){
 }
 window.addEventListener("beforeprint", () => {
   fillCover();
-  // force le chargement des images révélées différées avant impression
-  document.querySelectorAll(".cp-reveal.shown img[loading]").forEach(im => { im.loading = "eager"; });
+  // Force le chargement eager de TOUTES les images de vignettes avant impression
+  // (pas seulement celles avec .shown : en print, tous les cp-reveal sont forcés visibles)
+  document.querySelectorAll(".cp-reveal img, .reveal-thumbs img, .thumbs img").forEach(im => {
+    im.loading = "eager";
+    // Si l'image n'est pas encore chargée, forcer via src
+    if(!im.complete || im.naturalWidth === 0){
+      const s = im.src; im.src = ""; im.src = s;
+    }
+  });
 });
 
 /* ============================================================
