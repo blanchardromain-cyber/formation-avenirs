@@ -427,7 +427,8 @@ textarea{resize:vertical;min-height:90px}
 body.printing section.step{display:block!important;opacity:1!important;animation:none!important}
 body.printing .cp-media,
 body.printing .cp-media.reveal-only{display:block!important}
-body.printing .cp-reveal{display:block!important}
+body.printing .cp-reveal{display:block!important;opacity:1!important;animation:none!important}
+body.printing .cp-reveal *{animation:none!important;transition:none!important;opacity:1!important}
 body.printing #authOverlay,
 body.printing header.app-header,
 body.printing nav.stepper,
@@ -435,7 +436,10 @@ body.printing .nav-bottom{display:none!important}
 
 /* ===================== IMPRESSION ===================== */
 @media print{
-  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  /* Couleurs exactes + AUCUNE animation/transition : sinon l'impression peut
+     capturer une image en plein fadeUp (opacity 0) → vignette vide. */
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact;
+    animation:none!important;transition:none!important;opacity:1!important}
   /* Éléments masqués + étape 8 inutile à imprimer */
   header.app-header,nav.stepper,.nav-bottom,.mic-btn,
   .no-print,#authOverlay,#step-8{display:none!important}
@@ -450,8 +454,10 @@ body.printing .nav-bottom{display:none!important}
   #printCover h1{font-size:22pt;margin:0 0 16mm}
   #printCover p{font-size:13pt;margin:.3rem 0}
   #printCover .cover-meta{color:#555;font-size:11pt;margin-top:12mm}
-  /* Toutes les étapes visibles */
-  section.step{display:block!important;animation:none!important;opacity:1!important;page-break-inside:avoid;margin-bottom:1.4rem}
+  /* Toutes les étapes visibles. PAS de page-break-inside:avoid ici : une étape
+     est bien plus haute qu'une page A4, et l'imposer fait que Chrome/Edge
+     réserve une page blanche sans peindre le contenu (vignettes vides). */
+  section.step{display:block!important;animation:none!important;opacity:1!important;margin-bottom:1.4rem}
   .card,.checkpoint,.level-card,.wall-item{box-shadow:none;border:1px solid #ccc}
   video{display:none!important}
   /* ── FIX VIGNETTES ──────────────────────────────────────────────────────────
@@ -462,9 +468,11 @@ body.printing .nav-bottom{display:none!important}
   .cp-media,
   .cp-media.reveal-only{display:block!important;box-shadow:none;border:1px solid #ccc;border-top:none}
   .cp-reveal{display:block!important;margin-top:.5rem;padding-top:.5rem;border-top:none}
-  .reveal-thumbs{display:flex!important;flex-wrap:wrap;gap:5mm;margin-top:3mm}
-  .reveal-thumbs a{display:block!important;break-inside:avoid;page-break-inside:avoid;margin-bottom:4mm}
-  .reveal-thumbs img{display:block!important;height:auto!important;width:auto!important;max-width:130mm;border:1px solid #ccc}
+  /* Vignettes empilées en BLOC (pas de flex : Chrome/Edge n'imprime pas
+     fiablement des <img> en flex) avec largeur EXPLICITE (pas de width:auto). */
+  .reveal-thumbs{display:block!important;margin-top:3mm}
+  .reveal-thumbs a{display:block!important;break-inside:avoid;margin:0 0 4mm}
+  .reveal-thumbs img{display:block!important;width:120mm!important;max-width:100%!important;height:auto!important;border:1px solid #ccc}
   /* ── FIX CAPTURES JOINTES ────────────────────────────────────────────────── */
   .thumbs{display:flex!important;flex-wrap:wrap;gap:5mm;margin-top:4mm}
   .thumb{display:block!important;break-inside:avoid}
