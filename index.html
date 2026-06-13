@@ -2156,12 +2156,105 @@ $("exportBtn").addEventListener("click", () => {
   a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 });
-$("printBtn").addEventListener("click", () => {
-  // Affiche toutes les étapes/vignettes AVANT d'imprimer, et laisse le navigateur
-  // les peindre (double rAF) sinon les images des étapes masquées sortent vides.
-  enterPrintMode();
-  requestAnimationFrame(() => requestAnimationFrame(() => window.print()));
-});
+/* ============================================================
+   PLAN B — IMPRESSION VIA DOCUMENT DÉDIÉ (nouvelle fenêtre)
+   ─────────────────────────────────────────────────────────────
+   Au lieu d'imprimer la page interactive complexe (dont l'aperçu
+   de Chrome ne peint pas fiablement les vignettes), on construit
+   un document HTML propre, en bloc simple, avec les vignettes en
+   base64 (déjà inline dans le DOM), et on l'imprime dans une
+   fenêtre dédiée. Mécanisme identique aux captures jointes qui,
+   elles, s'impriment partout sans souci.
+============================================================ */
+function buildPrintDoc(){
+  const esc = s => String(s == null ? "" : s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const d = new Date();
+  const dStr = d.toLocaleDateString("fr-FR", { weekday:"long", day:"numeric", month:"long", year:"numeric" });
+  const dateCover = dStr.charAt(0).toUpperCase() + dStr.slice(1);
+  const name = profileName(state.profile) || state.user || "—";
+  const niv = state.profile && state.profile.niveau ? " (" + esc(state.profile.niveau) + ")" : "";
+
+  // Repérages + vignettes d'une étape, lus directement dans le DOM (base64 déjà inline)
+  function blocksOf(sectionId){
+    const sec = document.getElementById(sectionId);
+    if(!sec) return "";
+    let out = "";
+    sec.querySelectorAll(".cp-block").forEach(block => {
+      const cb = block.querySelector(".checkpoint input[type=checkbox]");
+      const labelEl = block.querySelector(".checkpoint label b") || block.querySelector(".checkpoint label");
+      const label = labelEl ? labelEl.textContent.trim() : "";
+      const titleEl = block.querySelector(".reveal-title");
+      const title = titleEl ? titleEl.textContent.trim() : "";
+      const imgs = [...block.querySelectorAll(".reveal-thumbs img")]
+        .map(im => '<img src="' + im.src + '" alt="' + esc(im.alt || "") + '">').join("");
+      out += '<div class="rep">'
+        + '<p class="rep-h">' + (cb && cb.checked ? "☑" : "☐") + " " + esc(label) + "</p>"
+        + (title ? '<p class="rep-t">' + esc(title) + "</p>" : "")
+        + (imgs ? '<div class="vigs">' + imgs + "</div>" : "")
+        + "</div>";
+    });
+    return out;
+  }
+  const fieldVal = id => { const el = $(id); return el ? el.value.trim() : ""; };
+  const noteBlock = (id, titre) => {
+    const v = fieldVal(id);
+    return v ? '<p class="lab">' + titre + '</p><div class="note">' + esc(v) + "</div>" : "";
+  };
+  const capt = id => ((state.images && state.images[id]) || [])
+    .map(im => '<img class="capt" src="' + im.dataUrl + '">').join("");
+
+  const css =
+    "@page{size:A4 portrait;margin:14mm 12mm}"
+    + "*{box-sizing:border-box}"
+    + "body{font-family:'Segoe UI',Arial,sans-serif;color:#22223d;margin:0;line-height:1.4}"
+    + ".cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:240mm;page-break-after:always}"
+    + ".cover h1{font-size:24pt;color:#3a2c78;margin:0 0 8mm}"
+    + ".cover .sub{font-size:13pt;color:#555;margin:0 0 16mm}"
+    + ".cover .who{font-size:15pt;font-weight:700;margin:.3rem 0}"
+    + ".cover .dt{font-size:12pt;color:#555}"
+    + "h2{font-size:15pt;color:#3a2c78;border-bottom:2px solid #3a2c78;padding-bottom:3pt;margin:16pt 0 8pt}"
+    + ".rep{margin:0 0 7mm;page-break-inside:auto}"
+    + ".rep-h{font-weight:700;font-size:12pt;margin:0 0 1.5mm}"
+    + ".rep-t{color:#1f9d55;font-weight:600;margin:0 0 2mm}"
+    + ".vigs img,.capt{display:block;width:150mm;max-width:100%;height:auto;border:1px solid #ccc;margin:0 0 3mm}"
+    + ".lab{font-weight:700;margin:6pt 0 2pt}"
+    + ".note{background:#f3f1fa;border-left:3pt solid #3a2c78;padding:6pt 10pt;margin:2pt 0 6pt;white-space:pre-wrap}"
+    + "ul{margin:4pt 0}li{margin-bottom:2pt}";
+
+  return "<!DOCTYPE html><html lang=\"fr\"><head><meta charset=\"utf-8\">"
+    + "<title>Formation Avenir(s) — Ma fiche</title><style>" + css + "</style></head><body>"
+    + '<div class="cover"><h1>Formation Avenir(s)</h1>'
+    +   '<p class="sub">Capsule interactive — ma fiche de travail</p>'
+    +   '<p class="who">' + esc(name) + niv + "</p>"
+    +   '<p class="dt">' + esc(dateCover) + "</p></div>"
+    + objectifsDocHtml()
+    + "<h2>Étape 2 — Mission côté élève</h2>" + blocksOf("step-2")
+    + noteBlock("noteEleve", "Ce qui me servira pour ma classe :") + capt("noteEleve")
+    + "<h2>Étape 3 — Mission côté prof</h2>" + blocksOf("step-3")
+    + "<h2>Ma fiche d'activité</h2><ul>"
+    +   "<li><b>Activité retenue :</b> " + (esc(fieldVal("ficheActivite")) || "—") + "</li>"
+    +   "<li><b>Niveau visé :</b> " + ($("ficheNiveau") ? ($("ficheNiveau").value || "—") : "—") + "</li></ul>"
+    + noteBlock("ficheQuand", "Quand et comment je l'intègre :") + capt("ficheQuand")
+    + planningDocHtml()
+    + "</body></html>";
+}
+
+function printViaWindow(){
+  const w = window.open("", "_blank");
+  if(!w){
+    alert("L'impression a été bloquée par le navigateur.\nAutorisez les fenêtres pop-up pour ce site, puis réessayez.");
+    return;
+  }
+  w.document.open();
+  w.document.write(buildPrintDoc());
+  w.document.close();
+  const go = () => { try{ w.focus(); w.print(); }catch(e){} };
+  // base64 inline : chargement quasi immédiat ; on attend load + petit délai de sécurité
+  if(w.document.readyState === "complete") setTimeout(go, 250);
+  else w.addEventListener("load", () => setTimeout(go, 250));
+}
+
+$("printBtn").addEventListener("click", printViaWindow);
 
 /* ============================================================
    CARTES NIVEAUX — accordéons
