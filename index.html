@@ -849,9 +849,9 @@ textarea{resize:vertical;min-height:90px}
         <p class="reveal-title">✓ Repéré ! Les activités associées sur Avenir(s) :</p>
         <div class="reveal-thumbs">
           <a href="assets/etape2/vignette-arbre-interets.jpg" target="_blank" rel="noopener">
-            <img src="assets/etape2/vignette-arbre-interets.jpg" alt="Activité Avenir(s) : je construis mon arbre d'intérêts" loading="lazy"></a>
+            <img src="assets/etape2/vignette-arbre-interets.jpg" alt="Activité Avenir(s) : je construis mon arbre d'intérêts"></a>
           <a href="assets/etape2/vignette-quiz-personnalite.jpg" target="_blank" rel="noopener">
-            <img src="assets/etape2/vignette-quiz-personnalite.jpg" alt="Activité Avenir(s) : explorer sa personnalité avec un quiz" loading="lazy"></a>
+            <img src="assets/etape2/vignette-quiz-personnalite.jpg" alt="Activité Avenir(s) : explorer sa personnalité avec un quiz"></a>
         </div>
       </div>
     </div>
@@ -868,9 +868,9 @@ textarea{resize:vertical;min-height:90px}
         <p class="reveal-title">✓ Repéré ! Ce que l'élève voit sur Avenir(s) :</p>
         <div class="reveal-thumbs">
           <a href="assets/etape2/vignette-variete-metiers.jpg" target="_blank" rel="noopener">
-            <img src="assets/etape2/vignette-variete-metiers.jpg" alt="Série d'activités : explorer la variété des métiers" loading="lazy"></a>
+            <img src="assets/etape2/vignette-variete-metiers.jpg" alt="Série d'activités : explorer la variété des métiers"></a>
           <a href="assets/etape2/vignette-je-decouvre.png" target="_blank" rel="noopener">
-            <img src="assets/etape2/vignette-je-decouvre.png" alt="Bouton Je découvre des métiers" loading="lazy"></a>
+            <img src="assets/etape2/vignette-je-decouvre.png" alt="Bouton Je découvre des métiers"></a>
         </div>
       </div>
     </div>
@@ -887,7 +887,7 @@ textarea{resize:vertical;min-height:90px}
         <p class="reveal-title">✓ Repéré ! L'onglet à retrouver :</p>
         <div class="reveal-thumbs">
           <a href="assets/etape2/vignette-portfolio-onglet.png" target="_blank" rel="noopener">
-            <img src="assets/etape2/vignette-portfolio-onglet.png" alt="Bandeau Avenir(s) avec l'onglet Mon portfolio" loading="lazy"></a>
+            <img src="assets/etape2/vignette-portfolio-onglet.png" alt="Bandeau Avenir(s) avec l'onglet Mon portfolio"></a>
         </div>
       </div>
     </div>
@@ -928,7 +928,7 @@ textarea{resize:vertical;min-height:90px}
         <p class="reveal-title">✓ Repéré ! L'écran de suivi sur Avenir(s) :</p>
         <div class="reveal-thumbs">
           <a href="assets/etape3/prof-suivi-activite.jpg" target="_blank" rel="noopener">
-            <img src="assets/etape3/prof-suivi-activite.jpg" alt="Écran Avenir(s) : suivi d'activité des élèves" loading="lazy"></a>
+            <img src="assets/etape3/prof-suivi-activite.jpg" alt="Écran Avenir(s) : suivi d'activité des élèves"></a>
         </div>
       </div>
     </div>
@@ -945,7 +945,7 @@ textarea{resize:vertical;min-height:90px}
         <p class="reveal-title">✓ Repéré ! La banque d'activités pédagogiques :</p>
         <div class="reveal-thumbs">
           <a href="assets/etape3/prof-banque-activites.jpg" target="_blank" rel="noopener">
-            <img src="assets/etape3/prof-banque-activites.jpg" alt="Écran Avenir(s) : banque d'activités pédagogiques" loading="lazy"></a>
+            <img src="assets/etape3/prof-banque-activites.jpg" alt="Écran Avenir(s) : banque d'activités pédagogiques"></a>
         </div>
       </div>
     </div>
@@ -962,7 +962,7 @@ textarea{resize:vertical;min-height:90px}
         <p class="reveal-title">✓ Repéré ! Le modèle de progression :</p>
         <div class="reveal-thumbs">
           <a href="assets/etape3/prof-modele-progression.jpg" target="_blank" rel="noopener">
-            <img src="assets/etape3/prof-modele-progression.jpg" alt="Écran Avenir(s) : modèle de progression par niveau" loading="lazy"></a>
+            <img src="assets/etape3/prof-modele-progression.jpg" alt="Écran Avenir(s) : modèle de progression par niveau"></a>
         </div>
       </div>
     </div>
@@ -1423,35 +1423,24 @@ window.addEventListener("beforeprint", () => {
 });
 
 /* ============================================================
-   PRÉCHARGEMENT BASE64 DES VIGNETTES AU CHARGEMENT DE LA PAGE
+   PRÉCHARGEMENT DES VIGNETTES (impression fiable)
    ─────────────────────────────────────────────────────────────
-   Problème : les images dans .cp-reveal ont loading="lazy" et
-   leur parent est display:none. Le navigateur ne les charge
-   JAMAIS, même en @media print avec display:block forcé.
-   Solution : au chargement de la page, on fetch() chaque image,
-   on la convertit en data-URL base64 et on remplace le src.
-   Ainsi, au moment d'imprimer, l'image est déjà dans le DOM
-   sous forme inline — aucun chargement réseau requis.
+   Les vignettes vivent dans des .cp-reveal en display:none. En
+   retirant loading="lazy" du HTML, le navigateur les télécharge
+   dès le chargement de la page : display:none n'empêche PAS le
+   téléchargement d'une image, seul loading="lazy" le différait
+   (et une image lazy dans un display:none n'entre jamais dans le
+   viewport, donc n'était JAMAIS chargée).
+   On force en plus la mise en cache via new Image() — requête HTTP
+   normale, même origine, pas de CORS. Au moment d'imprimer,
+   @media print passe la chaîne .cp-media > .cp-reveal > img en
+   display:block et l'image, déjà en cache, s'affiche aussitôt.
 ============================================================ */
-(function preloadRevealImagesAsBase64(){
-  const imgs = document.querySelectorAll(".cp-reveal img, .reveal-thumbs img");
-  imgs.forEach(img => {
-    const originalSrc = img.getAttribute("src");
-    if(!originalSrc || originalSrc.startsWith("data:")) return;
-    img.removeAttribute("loading"); // supprimer lazy
-    fetch(originalSrc)
-      .then(r => {
-        if(!r.ok) throw new Error("HTTP " + r.status);
-        return r.blob();
-      })
-      .then(blob => new Promise((res, rej) => {
-        const fr = new FileReader();
-        fr.onload = () => res(fr.result);
-        fr.onerror = rej;
-        fr.readAsDataURL(blob);
-      }))
-      .then(dataUrl => { img.src = dataUrl; })
-      .catch(() => { /* image absente : on garde le src original */ });
+(function preloadRevealImages(){
+  document.querySelectorAll(".cp-reveal img, .reveal-thumbs img").forEach(img => {
+    img.removeAttribute("loading"); // filet de sécurité si un lazy traînait
+    const src = img.getAttribute("src");
+    if(src && !src.startsWith("data:")){ const pre = new Image(); pre.src = src; }
   });
 })();
 
