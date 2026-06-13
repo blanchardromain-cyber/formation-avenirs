@@ -1418,8 +1418,27 @@ function fillCover(){
     { weekday:"long", day:"numeric", month:"long", year:"numeric" });
   $("coverDate").textContent = d.charAt(0).toUpperCase() + d.slice(1);
 }
+/* Avant impression : remplir la page de garde ET forcer l'affichage réel
+   de toutes les vignettes (classe .shown), pas seulement via @media print.
+   Certains navigateurs ne peignent pas une image rendue visible uniquement
+   par la feuille d'impression : en les passant en .shown dans le flux normal,
+   elles sont mises en page et décodées comme à l'écran. On restaure l'état
+   après impression. */
+let _revealRestore = null;
 window.addEventListener("beforeprint", () => {
   fillCover();
+  const reveals = document.querySelectorAll(".cp-reveal");
+  _revealRestore = [];
+  reveals.forEach(r => {
+    _revealRestore.push([r, r.classList.contains("shown")]);
+    r.classList.add("shown");
+  });
+});
+window.addEventListener("afterprint", () => {
+  if(_revealRestore){
+    _revealRestore.forEach(([r, was]) => { if(!was) r.classList.remove("shown"); });
+    _revealRestore = null;
+  }
 });
 
 /* ============================================================
@@ -1440,7 +1459,15 @@ window.addEventListener("beforeprint", () => {
   document.querySelectorAll(".cp-reveal img, .reveal-thumbs img").forEach(img => {
     img.removeAttribute("loading"); // filet de sécurité si un lazy traînait
     const src = img.getAttribute("src");
-    if(src && !src.startsWith("data:")){ const pre = new Image(); pre.src = src; }
+    if(!src || src.startsWith("data:")) return;
+    // Téléchargement (cache) + DÉCODAGE hors-écran : l'image est ainsi
+    // prête à peindre à l'impression, même si elle n'a jamais été affichée
+    // à l'écran. Évite la vignette vide au PDF sur les navigateurs qui ne
+    // décodent pas à temps une image rendue visible seulement en @media print.
+    const pre = new Image();
+    pre.src = src;
+    if(pre.decode) pre.decode().catch(() => {});
+    if(img.decode) img.decode().catch(() => {});
   });
 })();
 
