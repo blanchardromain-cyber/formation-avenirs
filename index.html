@@ -441,10 +441,19 @@ textarea{resize:vertical;min-height:90px}
   /* Images : jamais coupées, jamais débordantes, liens-images sans URL parasite */
   img{max-width:100%;break-inside:avoid;page-break-inside:avoid}
   .thumb img{height:auto;max-width:75mm}
-  .reveal-thumbs{display:block}
+  /* Vignettes Avenir(s) : forcer l'affichage de TOUS les blocs reveal en impression,
+     qu'ils soient cochés ou non — les cases cochées affichent leur visuel,
+     les autres affichent au moins leur titre de révélation */
+  .cp-media.reveal-only{display:block!important}
+  .cp-reveal{display:block!important}
+  .reveal-thumbs{display:flex!important;flex-wrap:wrap;gap:5mm}
   .reveal-thumbs a{display:block;break-inside:avoid;page-break-inside:avoid;margin:0 0 5mm}
-  .reveal-thumbs img{height:auto;width:auto;max-width:150mm;border:1px solid #ccc}
+  .reveal-thumbs img{height:auto!important;width:auto;max-width:150mm;border:1px solid #ccc}
   a:has(img)::after{content:""!important}
+  /* Captures jointes (étapes 3 et 4) : forcer l'affichage des vignettes utilisateur */
+  .thumbs{display:flex!important;flex-wrap:wrap;gap:5mm;margin-top:4mm}
+  .thumb{display:block!important;break-inside:avoid;page-break-inside:avoid}
+  .thumb img{height:auto!important;max-width:75mm;border:1px solid #ccc}
   /* Feuilles de programmation : toutes visibles à l'impression globale */
   .plan-sheet{display:block!important;box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
   /* Mode « Imprimer mes feuilles » : uniquement les feuilles cochées, une par page */
