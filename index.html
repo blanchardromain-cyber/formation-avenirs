@@ -417,6 +417,14 @@ textarea{resize:vertical;min-height:90px}
 /* ===================== PAGE DE GARDE (impression uniquement) ===================== */
 #printCover{display:none}
 
+/* Bannière Avenir(s) discrète sur l'accueil (étape 0) */
+#step-0 .step-head{overflow:hidden}
+.accueil-banner{height:46px;width:auto;display:block;margin:0 0 .9rem;
+  border-radius:8px;box-shadow:0 1px 5px rgba(34,34,61,.12)}
+@media(min-width:640px){
+  .accueil-banner{float:right;height:50px;margin:.1rem 0 .6rem 1.1rem}
+}
+
 /* ===================== AFFICHAGE COMPLET AVANT IMPRESSION =====================
    Au clic sur Imprimer, on ajoute la classe .printing sur <body> AVANT le rendu
    d'impression. Ces règles (en média écran, donc appliquées dans le DOM vivant)
@@ -672,6 +680,7 @@ body.printing .nav-bottom{display:none!important}
 <!-- ============ ÉTAPE 0 — ACCUEIL ============ -->
 <section class="step" id="step-0" aria-labelledby="h-step0">
   <div class="step-head">
+    <img id="accueilBanner" class="accueil-banner no-print" alt="Avenir(s)">
     <span class="step-kicker">Étape 0 · Démarrage</span>
     <h2 id="h-step0">Bienvenue dans la capsule Avenir(s)</h2>
     <p class="lead">Cette page est à la fois le support projeté et votre fiche de travail interactive. Avancez à votre rythme : tout ce que vous cochez ou notez pourra être exporté à la fin.</p>
@@ -1505,6 +1514,14 @@ window.addEventListener("afterprint", exitPrintMode);
   });
 })();
 
+/* Bannière Avenir(s) discrète sur l'accueil : réutilise l'image de garde
+   déjà embarquée en base64 (aucune duplication de données). */
+(function setAccueilBanner(){
+  const b = document.getElementById("accueilBanner");
+  const src = (document.querySelector("#printCover img") || {}).src;
+  if(b && src) b.src = src;
+})();
+
 /* ============================================================
    NAVIGATION PAR ÉTAPES
 ============================================================ */
@@ -2263,18 +2280,40 @@ function buildPrintDoc(){
 }
 
 function printViaWindow(){
-  const w = window.open("", "_blank");
-  if(!w){
-    alert("L'impression a été bloquée par le navigateur.\nAutorisez les fenêtres pop-up pour ce site, puis réessayez.");
-    return;
-  }
-  w.document.open();
-  w.document.write(buildPrintDoc());
-  w.document.close();
-  const go = () => { try{ w.focus(); w.print(); }catch(e){} };
+  // Impression dans un IFRAME caché : aucun onglet "about:blank" qui traîne,
+  // aucun risque de bloqueur de pop-up, et le même rendu fiable que la fenêtre
+  // dédiée (document simple, images en base64). L'iframe est retiré après coup.
+  const old = document.getElementById("printFrame");
+  if(old) old.remove();
+  const frame = document.createElement("iframe");
+  frame.id = "printFrame";
+  frame.setAttribute("aria-hidden", "true");
+  // hors écran (pas display:none, sinon certains navigateurs n'impriment pas le contenu)
+  frame.style.cssText = "position:absolute;left:-9999px;top:0;width:0;height:0;border:0";
+  document.body.appendChild(frame);
+
+  const doc = frame.contentWindow.document;
+  doc.open();
+  doc.write(buildPrintDoc());
+  doc.close();
+
+  let done = false;
+  const cleanup = () => { if(done) return; done = true; setTimeout(() => { const f = document.getElementById("printFrame"); if(f) f.remove(); }, 800); };
+  const go = () => {
+    try{
+      frame.contentWindow.focus();
+      if(frame.contentWindow.matchMedia){
+        const mql = frame.contentWindow.matchMedia("print");
+        mql.addEventListener && mql.addEventListener("change", e => { if(!e.matches) cleanup(); });
+      }
+      frame.contentWindow.onafterprint = cleanup;
+      frame.contentWindow.print();
+    }catch(e){ cleanup(); }
+    setTimeout(cleanup, 60000); // filet de sécurité si afterprint ne se déclenche pas
+  };
   // base64 inline : chargement quasi immédiat ; on attend load + petit délai de sécurité
-  if(w.document.readyState === "complete") setTimeout(go, 250);
-  else w.addEventListener("load", () => setTimeout(go, 250));
+  if(doc.readyState === "complete") setTimeout(go, 300);
+  else frame.contentWindow.addEventListener("load", () => setTimeout(go, 300));
 }
 
 $("printBtn").addEventListener("click", printViaWindow);
