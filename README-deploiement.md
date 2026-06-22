@@ -126,7 +126,7 @@ Aucun réglage CORS supplémentaire n'est nécessaire.
 | 5 | **Porte AVN26** | Après connexion, un mauvais code est refusé ; `AVN26` (ou `avn26`) ouvre la capsule. | ☐ |
 | 6 | **Dictée vocale** | Étape 2 ou 4 : bouton 🎙 → le texte dicté s'ajoute au champ (Chrome/Edge ; sur Firefox le bouton disparaît proprement). | ☐ |
 | 7 | **Capsule vidéo étape 2** | La vidéo « Le point de vue de l'élève » se lit dans la page (lecture, pause, plein écran) ; cocher un point de repérage fait apparaître sa vignette. | ☐ |
-| 8 | **Visuels étape 3** | Cocher un repérage côté prof fait apparaître la capture d'écran correspondante (suivi / banque d'activités / progression). | ☐ |
+| 8 | **Visuels étape 3** | Cocher un repérage côté prof fait apparaître la capture correspondante (suivi / banque d'activités / progression / **assignation** d'une activité à une classe ou un élève — image combinée des 3 captures). | ☐ |
 | 9 | **Mur — post signé** | Étape 6 : connecté avec un profil complet, le formulaire affiche « Vous publierez en tant que Prénom NOM · niveau » ; publier → la ligne du Sheet `Mur` contient Prénom NOM et le niveau. | ☐ |
 | 10 | **Mur — affichage live** | Ouvrir la capsule sur un 2ᵉ navigateur/poste : la publication du 1ᵉʳ apparaît en ≤ 10 s. | ☐ |
 | 11 | **Export formateur** | Étape 6 → « 🔑 Vue formateur » → code maître → « Copier dans le presse-papiers » : texte groupé `=== NIVEAU 5e ===` / 4e / 3e (+ `=== AUTRES ===`), une ligne `• Prénom NOM — contribution` par post ; le bouton .txt fonctionne aussi. | ☐ |
