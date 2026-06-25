@@ -2011,7 +2011,9 @@ function planChecked(niv){
     const label = inp ? inp.value.trim() : cell.textContent.trim();
     const boxes = [...tr.querySelectorAll('input[type=checkbox]')];
     const mois = PLAN_MOIS.filter((m, mi) => boxes[mi] && boxes[mi].checked);
-    if(label && mois.length) out.push({ label, mois });
+    const table = tr.closest(".plan-table");
+    const group = table ? (table.dataset.group || "activites") : "activites";
+    if(label && mois.length) out.push({ label, mois, group });
   });
   return out;
 }
@@ -2259,13 +2261,19 @@ function objectifsDocHtml(){
 /* Programmation annuelle pour l'export Word : liste lisible des coches */
 function planningDocHtml(){
   const esc = s => String(s).replace(/[&<>]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+  const GROUP_LABEL = { activites: "Activités", outils: "Outils" };
   let out = "";
   Object.keys(PLAN_ACTIVITES).forEach(niv => {
     const items = planChecked(niv);
     if(!items.length) return;
-    out += "<p><b>Niveau " + niv + "</b></p><ul>" +
-      items.map(it => "<li><b>" + esc(it.label) + "</b> : " + it.mois.join(", ") + "</li>").join("") +
-      "</ul>";
+    out += "<p><b>Niveau " + niv + "</b></p>";
+    ["activites", "outils"].forEach(g => {
+      const gi = items.filter(it => it.group === g);
+      if(!gi.length) return;
+      out += "<p style=\"margin:.25em 0 0\"><i>" + GROUP_LABEL[g] + "</i></p><ul>" +
+        gi.map(it => "<li><b>" + esc(it.label) + "</b> : " + it.mois.join(", ") + "</li>").join("") +
+        "</ul>";
+    });
   });
   return out ? "<h2>Ma programmation annuelle</h2>" + out : "";
 }
