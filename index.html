@@ -369,7 +369,7 @@ textarea{resize:vertical;min-height:90px}
   font-family:var(--font-title);font-size:.76rem;color:var(--ink-soft);
   padding:.3rem .15rem;text-align:center;border-bottom:2px solid var(--violet-soft);
 }
-.plan-table th:first-child{text-align:left;width:28%}
+.plan-table th:first-child{text-align:left;width:32%}
 .plan-table td{border-bottom:1px solid #efedf8;padding:.3rem .15rem;text-align:center}
 .plan-table td:first-child{text-align:left;padding-left:.3rem}
 .plan-table tbody tr:hover{background:#faf9fe}
@@ -381,6 +381,18 @@ textarea{resize:vertical;min-height:90px}
 .plan-table input[type=text]:focus{border-style:solid;border-color:var(--violet);outline:none}
 .plan-actions{display:flex;align-items:center;gap:1rem;flex-wrap:wrap;margin-top:.4rem}
 .plan-hint{font-size:.8rem;color:var(--ink-soft);max-width:52ch}
+.plan-group-title{
+  font-family:var(--font-title);font-size:.98rem;color:var(--violet-dark);
+  margin:1.3rem 0 .35rem;padding-bottom:.2rem;border-bottom:2px solid var(--violet-soft);
+}
+.plan-group-title:first-of-type{margin-top:.3rem}
+.plan-table th.plan-del,.plan-table td.plan-del{width:2rem;padding:.2rem 0}
+.plan-del-btn{
+  border:none;background:none;color:var(--ink-soft);font-size:.95rem;line-height:1;
+  cursor:pointer;padding:.2rem .35rem;border-radius:6px;
+}
+.plan-del-btn:hover{background:#fdeaea;color:var(--err)}
+body.printing .plan-del{display:none!important}
 
 /* ===================== RESSOURCES ===================== */
 .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
@@ -490,6 +502,8 @@ body.printing .nav-bottom{display:none!important}
   a:has(img)::after{content:""!important}
   /* Feuilles de programmation */
   .plan-sheet{display:block!important;box-shadow:none;border:1px solid #ccc;page-break-inside:avoid}
+  .plan-del{display:none!important}
+  .plan-group-title{break-after:avoid}
   body.print-planning section.step{display:none!important}
   body.print-planning #printCover{display:none!important}
   body.print-planning #step-5{display:block!important}
@@ -1082,6 +1096,12 @@ body.printing .nav-bottom{display:none!important}
   <div class="callout">
     💬 <strong>Travaillez de concert :</strong> regroupez-vous avec les professeurs principaux de <strong>votre niveau</strong> et élaborez ces pistes ensemble, maintenant. Vous affinerez le programme plus tard dans l'année.
   </div>
+
+  <p style="font-size:.9rem;color:var(--ink-soft);margin:.2rem 0 1rem">
+    Deux tableaux par niveau : les <strong>Activités</strong> Avenir(s), puis les <strong>Outils</strong>.
+    Cochez les mois envisagés, supprimez les lignes inutiles avec ✕ pour alléger votre feuille,
+    et utilisez les lignes libres pour vos propres idées.
+  </p>
 
   <div class="plan-tabs no-print" role="tablist" aria-label="Choisir un niveau">
     <button type="button" role="tab" data-plan="5e" aria-selected="true">5e</button>
@@ -1790,14 +1810,61 @@ function objectivesChecked(niv){
    ÉTAPE 5 — PROGRAMMATION ANNUELLE
 ============================================================ */
 const PLAN_MOIS = ["sept","oct","nov","déc","janv","févr","mars","avr","mai","juin"];
+// Activités Avenir(s) nommées (liste principale, par niveau)
 const PLAN_ACTIVITES = {
+  "5e": [
+    "Découvrir la plateforme Avenir(s)",
+    "Savoir définir un métier et un secteur professionnel",
+    "Se renseigner sur la vie économique de son quartier",
+    "Des super-héros et super-héroïnes pour apprendre à se connaître",
+    "Le métier de mon choix : de l'image à la réalité",
+    "Les métiers qui font rêver : du rêve à la réalité",
+    "Découvrir des métiers dans les services",
+    "Les métiers de l'extrême",
+    "Découvrir des métiers méconnus",
+    "Ce que les jouets disent des métiers",
+    "Faire le bilan des activités d'orientation de l'année"
+  ],
+  "4e": [
+    "Découvrir des secteurs d'activité et les métiers qui les composent",
+    "Découvrir la plateforme Avenir(s)",
+    "Préparer une visite d'entreprise",
+    "Visiter une entreprise",
+    "Réfléchir aux notions de travail et de métier",
+    "Pitcher le métier de mes rêves",
+    "Le métier de mes rêves, comment faire pour l'exercer",
+    "Découvrir les formations après la 3e",
+    "Identifier les forces utiles dans un métier imaginaire",
+    "Recherches sur les contenus de formation et élaboration d'un questionnaire (3e)",
+    "Jeu des 12 portraits - Qui est une fille ? Qui est un garçon ?",
+    "S'interroger sur les différentes conditions d'exercice d'un métier",
+    "Faire le bilan des activités d'orientation de l'année"
+  ],
+  "3e": [
+    "Découvrir les formations après la 3e",
+    "Se familiariser avec les études après la 3e",
+    "Découvrir la plateforme Avenir(s)",
+    "Décrypter les procédures d'orientation en 3e",
+    "Découvrir MOEL et explorer les ressources d'orientation",
+    "Élaborer son projet de stage",
+    "Rechercher un stage de qualité",
+    "Se préparer aux JPO dans les lycées",
+    "Préparer un entretien individuel d'orientation avec le portfolio",
+    "Découvrir les métiers et les filières, au-delà du genre",
+    "Comprendre ce qui influence un choix d'orientation",
+    "Finaliser son projet d'orientation post-3e",
+    "Parler de son stage et réussir l'oral du DNB",
+    "Faire le bilan des activités d'orientation de l'année"
+  ]
+};
+// Outils (ancienne liste, désormais placée en dessous des activités)
+const PLAN_OUTILS = {
   "5e": [
     "« Je découvre des métiers »",
     "Rencontres avec des pros",
     "Le journal de ma Cordée (Cordées de la Réussite)",
     "JobIRL",
-    "L'aventure du vivant",
-    "Outil régional métiers & formations [À VÉRIFIER]"
+    "L'aventure du vivant"
   ],
   "4e": [
     "Rencontres avec des pros",
@@ -1822,12 +1889,72 @@ const PLAN_ACTIVITES = {
     "L'aventure du vivant"
   ]
 };
-const PLAN_LIBRES = 2; // lignes « activité libre » par feuille
+const PLAN_LIBRES = 2; // lignes « activité libre » par tableau
 
-function planRows(niv){
-  const rows = PLAN_ACTIVITES[niv].map((label, i) => ({ label, key: String(i) }));
-  for(let i = 0; i < PLAN_LIBRES; i++) rows.push({ label: null, key: "libre" + i });
-  return rows;
+/* Construit un tableau (mois en colonnes) pour un groupe de lignes ; chaque
+   ligne est supprimable (✕) et 2 lignes libres sont ajoutées en fin. */
+function buildPlanTable(niv, group, labels){
+  const table = document.createElement("table");
+  table.className = "plan-table";
+  table.dataset.group = group;
+  const thead = document.createElement("thead");
+  const hr = document.createElement("tr");
+  const th0 = document.createElement("th");
+  th0.scope = "col";
+  th0.textContent = group === "outils" ? "Outil" : "Activité";
+  hr.appendChild(th0);
+  PLAN_MOIS.forEach(m => {
+    const th = document.createElement("th");
+    th.scope = "col";
+    th.textContent = m;
+    hr.appendChild(th);
+  });
+  const thDel = document.createElement("th");
+  thDel.className = "plan-del";
+  thDel.setAttribute("aria-hidden", "true");
+  hr.appendChild(thDel);
+  thead.appendChild(hr);
+  const tbody = document.createElement("tbody");
+  function addRow(label){
+    const tr = document.createElement("tr");
+    const td0 = document.createElement("td");
+    td0.className = "plan-label";
+    if(label === null){
+      const inp = document.createElement("input");
+      inp.type = "text";
+      inp.placeholder = "Activité libre…";
+      inp.maxLength = 120;
+      inp.setAttribute("aria-label", "Ligne libre (" + niv + ")");
+      td0.appendChild(inp);
+    }else{
+      td0.textContent = label;
+    }
+    tr.appendChild(td0);
+    PLAN_MOIS.forEach(m => {
+      const td = document.createElement("td");
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.setAttribute("aria-label", (label || "ligne libre") + " en " + m + " (" + niv + ")");
+      td.appendChild(cb);
+      tr.appendChild(td);
+    });
+    const tdDel = document.createElement("td");
+    tdDel.className = "plan-del";
+    const del = document.createElement("button");
+    del.type = "button";
+    del.className = "plan-del-btn";
+    del.textContent = "✕";
+    del.title = "Supprimer cette ligne";
+    del.setAttribute("aria-label", "Supprimer la ligne « " + (label || "ligne libre") + " »");
+    del.addEventListener("click", () => tr.remove());
+    tdDel.appendChild(del);
+    tr.appendChild(tdDel);
+    tbody.appendChild(tr);
+  }
+  labels.forEach(addRow);
+  for(let i = 0; i < PLAN_LIBRES; i++) addRow(null);
+  table.append(thead, tbody);
+  return table;
 }
 function buildPlanning(){
   const wrap = $("planSheets");
@@ -1841,50 +1968,15 @@ function buildPlanning(){
     tagWrap.className = niv === "5e" ? "n5" : niv === "4e" ? "n4" : "n3";
     tagWrap.innerHTML = '<span class="lvl-tag">' + niv + "</span>";
     h3.append(tagWrap, "Programmation annuelle — " + niv);
-    const table = document.createElement("table");
-    table.className = "plan-table";
-    const thead = document.createElement("thead");
-    const hr = document.createElement("tr");
-    const th0 = document.createElement("th");
-    th0.scope = "col";
-    th0.textContent = "Activité";
-    hr.appendChild(th0);
-    PLAN_MOIS.forEach(m => {
-      const th = document.createElement("th");
-      th.scope = "col";
-      th.textContent = m;
-      hr.appendChild(th);
-    });
-    thead.appendChild(hr);
-    const tbody = document.createElement("tbody");
-    planRows(niv).forEach(r => {
-      const tr = document.createElement("tr");
-      const td0 = document.createElement("td");
-      if(r.label === null){
-        const inp = document.createElement("input");
-        inp.type = "text";
-        inp.id = "pl-" + niv + "-" + r.key + "-label";
-        inp.placeholder = "Activité libre…";
-        inp.maxLength = 90;
-        inp.setAttribute("aria-label", "Activité libre (" + niv + ")");
-        td0.appendChild(inp);
-      }else{
-        td0.textContent = r.label;
-      }
-      tr.appendChild(td0);
-      PLAN_MOIS.forEach((m, mi) => {
-        const td = document.createElement("td");
-        const cb = document.createElement("input");
-        cb.type = "checkbox";
-        cb.id = "pl-" + niv + "-" + r.key + "-" + mi;
-        cb.setAttribute("aria-label", (r.label || "activité libre") + " en " + m + " (" + niv + ")");
-        td.appendChild(cb);
-        tr.appendChild(td);
-      });
-      tbody.appendChild(tr);
-    });
-    table.append(thead, tbody);
-    sheet.append(h3, table);
+    sheet.appendChild(h3);
+    const hActi = document.createElement("h4");
+    hActi.className = "plan-group-title";
+    hActi.textContent = "Activités";
+    sheet.append(hActi, buildPlanTable(niv, "activites", PLAN_ACTIVITES[niv]));
+    const hOut = document.createElement("h4");
+    hOut.className = "plan-group-title";
+    hOut.textContent = "Outils";
+    sheet.append(hOut, buildPlanTable(niv, "outils", PLAN_OUTILS[niv]));
     wrap.appendChild(sheet);
   });
 }
@@ -1899,13 +1991,19 @@ function selectPlanTab(niv){
 document.querySelectorAll(".plan-tabs button").forEach(b => {
   b.addEventListener("click", () => selectPlanTab(b.dataset.plan));
 });
-/* Lignes cochées d'une feuille -> [{label, mois:[...]}] (pour l'export Word) */
+/* Lignes cochées d'une feuille -> [{label, mois:[...]}] (pour l'export Word).
+   Lecture directe du DOM : tient compte des lignes supprimées et des 2 tableaux. */
 function planChecked(niv){
   const out = [];
-  planRows(niv).forEach(r => {
-    const label = r.label !== null ? r.label
-      : $("pl-" + niv + "-" + r.key + "-label").value.trim();
-    const mois = PLAN_MOIS.filter((m, mi) => $("pl-" + niv + "-" + r.key + "-" + mi).checked);
+  const sheet = $("sheet-" + niv);
+  if(!sheet) return out;
+  sheet.querySelectorAll(".plan-table tbody tr").forEach(tr => {
+    const cell = tr.querySelector(".plan-label");
+    if(!cell) return;
+    const inp = cell.querySelector("input[type=text]");
+    const label = inp ? inp.value.trim() : cell.textContent.trim();
+    const boxes = [...tr.querySelectorAll('input[type=checkbox]')];
+    const mois = PLAN_MOIS.filter((m, mi) => boxes[mi] && boxes[mi].checked);
     if(label && mois.length) out.push({ label, mois });
   });
   return out;

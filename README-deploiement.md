@@ -134,7 +134,7 @@ Aucun réglage CORS supplémentaire n'est nécessaire.
 | 13 | **Export Word** | Étape 8 → le `.doc` s'ouvre dans Word : participant (Prénom NOM), objectifs retenus, cases cochées, note, fiche, programmation, publications. | ☐ |
 | 14 | **Impression PDF + page de garde** | Étape 8 → Imprimer : la 1ʳᵉ page est la page de garde (image Avenirs, Participant Prénom NOM, Formateur Romain Blanchard, date du jour en français) ; TOUTES les images révélées (vignettes étapes 2-3, captures jointes) sont visibles, sans coupe au milieu d'une image. | ☐ |
 | 15 | **Captures d'écran jointes** | Étape 2 ou 4 : `Win+Maj+S` puis `Ctrl+V` dans le champ (ou bouton 📷) → vignette affichée, supprimable, présente dans l'export Word et le PDF. | ☐ |
-| 16 | **Programmation annuelle** | Étape 5 : onglets 5e/4e/3e, cocher des mois → « Imprimer mes feuilles » ne sort que les feuilles cochées ; coches reprises dans Word et PDF. | ☐ |
+| 16 | **Programmation annuelle** | Étape 5 : onglets 5e/4e/3e, deux tableaux par niveau (**Activités** + **Outils**), 2 lignes libres chacun, bouton ✕ qui supprime une ligne ; cocher des mois → « Imprimer mes feuilles » ne sort que les feuilles cochées (colonne ✕ masquée à l'impression) ; coches reprises dans Word et PDF. | ☐ |
 | 17 | **Objectifs cochables** | Étape 1 : cocher des objectifs (un ou plusieurs niveaux) → section « Objectifs retenus par niveau » dans l'export Word. | ☐ |
 | 18 | **Minuteur supprimé** | Plus aucun bouton ni widget minuteur nulle part (en-tête, page, impression). | ☐ |
 
