@@ -393,6 +393,9 @@ textarea{resize:vertical;min-height:90px}
 }
 .plan-del-btn:hover{background:#fdeaea;color:var(--err)}
 body.printing .plan-del{display:none!important}
+.outils-band{margin:0 0 1.2rem;text-align:center}
+.outils-band img{width:100%;max-width:760px;height:auto;border-radius:10px;border:1px solid #e4e1f2;box-shadow:var(--shadow)}
+.outils-band figcaption{font-size:.82rem;color:var(--ink-soft);margin-top:.4rem}
 
 /* ===================== RESSOURCES ===================== */
 .res-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
@@ -831,7 +834,7 @@ body.printing .nav-bottom{display:none!important}
           <li>Les Cordées de la Réussite — Le journal de ma Cordée</li>
           <li>JobIRL</li>
           <li>L'aventure du vivant</li>
-          <li>Outil régional métiers &amp; formations — équivalent Pays de la Loire / académie de Nantes <span class="flag">À VÉRIFIER</span></li>
+          <li>Outil régional métiers &amp; formations — équivalent Pays de la Loire / académie de Nantes</li>
         </ul>
       </div>
       <div>
@@ -1018,7 +1021,7 @@ body.printing .nav-bottom{display:none!important}
   <div class="cp-block">
     <div class="checkpoint" data-check="prof-3">
       <input type="checkbox" id="cpP3">
-      <label for="cpP3"><b>⭐ J'ai repéré comment assigner une activité à une classe ou à un élève</b>
+      <label for="cpP3"><b>Assigner une activité à une classe ou à un élève</b>
         <span class="cp-desc">Le point clé : depuis une activité, le bouton <em>« Assigner »</em> permet de la déposer dans l'agenda d'une classe entière, ou d'un ou plusieurs élèves, à une date donnée.</span></label>
     </div>
     <div class="cp-media reveal-only">
@@ -1098,10 +1101,13 @@ body.printing .nav-bottom{display:none!important}
   </div>
 
   <p style="font-size:.9rem;color:var(--ink-soft);margin:.2rem 0 1rem">
-    Deux tableaux par niveau : les <strong>Activités</strong> Avenir(s), puis les <strong>Outils</strong>.
-    Cochez les mois envisagés, supprimez les lignes inutiles avec ✕ pour alléger votre feuille,
-    et utilisez les lignes libres pour vos propres idées.
+    Deux tableaux par niveau (<strong>Activités</strong> puis <strong>Outils</strong>) : cochez les mois, supprimez les lignes inutiles avec ✕, et ajoutez vos idées dans les lignes libres.
   </p>
+
+  <figure class="outils-band">
+    <img src="assets/etape5/bande-outils.png" alt="Aperçu des outils Avenir(s) : JobIRL, My Future, L'aventure du vivant, 1 élève 1 stage…" loading="lazy">
+    <figcaption>Les outils mobilisables tout au long de l'année.</figcaption>
+  </figure>
 
   <div class="plan-tabs no-print" role="tablist" aria-label="Choisir un niveau">
     <button type="button" role="tab" data-plan="5e" aria-selected="true">5e</button>
@@ -1121,7 +1127,7 @@ body.printing .nav-bottom{display:none!important}
   <div class="step-head">
     <span class="step-kicker">Étape 6 · Partage</span>
     <h2 id="h-step6">Le mur de la promo</h2>
-    <p class="lead">Postez <strong>UNE idée d'activité ou UN engagement concret</strong> que vous mettrez en œuvre avec vos classes. Le mur se met à jour en direct sur tous les postes.</p>
+    <p class="lead">Postez <strong>UNE idée d'activité ou UN engagement concret</strong> à mettre en œuvre avec vos classes. Le mur s'actualise en direct sur tous les postes.</p>
   </div>
 
   <div class="card no-print">
