@@ -333,8 +333,12 @@ textarea{resize:vertical;min-height:90px}
 .thumb button:hover{background:var(--err)}
 
 /* ===================== MUR ===================== */
-.wall-form{display:grid;grid-template-columns:1fr 130px 2fr auto;gap:.8rem;align-items:end}
-@media(max-width:900px){.wall-form{grid-template-columns:1fr 1fr}.wall-form .btn{grid-column:1/-1}}
+.wall-form{display:flex;flex-wrap:wrap;gap:.8rem;align-items:end}
+#wallPseudoField{flex:1 1 180px}
+#wallNiveauField{flex:0 0 120px}
+#wallActiviteField{flex:5 1 340px}
+.wall-form #wallSubmit{flex:0 0 auto;white-space:nowrap}
+@media(max-width:560px){.wall-form > *{flex:1 1 100%}}
 .wall-status{font-size:.88rem;color:var(--ink-soft);margin:.6rem 0 0;min-height:1.3rem;font-weight:600}
 .wall-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:.9rem;margin-top:1.1rem}
 .wall-item{
@@ -711,7 +715,8 @@ body.printing .nav-bottom{display:none!important}
         <li><strong>Ouvrez École Directe</strong> sur votre session habituelle.</li>
         <li>Sélectionnez <strong>« Mes Applis »</strong>
           <img class="inline-applis" src="assets/etape0/mes-applis.png" alt="Bouton Mes Applis d'École Directe"></li>
-        <li>Cliquez sur le <strong>connecteur Avenir(s)</strong> — accès à la plateforme sans mot de passe supplémentaire. Gardez l'onglet ouvert : on y revient aux étapes 2 et 3.</li>
+        <li>Cliquez sur le <strong>connecteur Avenir(s)</strong> : la page de connexion de la plateforme s'ouvre.</li>
+        <li>Connectez-vous avec votre <strong>compte EduConnect</strong>. Gardez ensuite l'onglet ouvert : on y revient aux étapes 2 et 3.</li>
       </ol>
       <p style="margin-bottom:1rem">
         <button type="button" class="big-check" id="connectedBtn" aria-pressed="false">
@@ -1153,7 +1158,7 @@ body.printing .nav-bottom{display:none!important}
           <option value="Autre">Autre</option>
         </select>
       </div>
-      <div class="field" style="margin:0">
+      <div class="field" style="margin:0" id="wallActiviteField">
         <label for="wallActivite">Mon idée ou mon engagement</label>
         <input type="text" id="wallActivite" maxlength="160" required placeholder="Ex. : test des centres d'intérêt avec ma 5eB avant les vacances de Noël">
       </div>
