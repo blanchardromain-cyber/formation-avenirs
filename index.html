@@ -112,7 +112,8 @@ section.step.active{display:block}
   color:var(--accent);background:#fbe7f0;border-radius:999px;padding:.22rem .8rem;
 }
 .step-head h2{font-size:clamp(1.5rem,3.2vw,2.15rem);margin:.55rem 0 .25rem}
-.step-head p.lead{font-size:1.06rem;color:var(--ink-soft);max-width:62ch;margin:.2rem 0 0}
+.step-head p.lead{font-size:1.06rem;color:var(--ink-soft);max-width:none;margin:.3rem 0 0}
+.inline-applis{height:1.7em;width:auto;vertical-align:middle;border-radius:6px;margin-left:.25rem;box-shadow:0 1px 3px rgba(34,34,61,.18)}
 
 .card{
   background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);
@@ -708,8 +709,9 @@ body.printing .nav-bottom{display:none!important}
       <h3>🚀 Pour commencer</h3>
       <ol class="checklist-launch">
         <li><strong>Ouvrez École Directe</strong> sur votre session habituelle.</li>
-        <li>Cliquez sur le <strong>connecteur Avenir(s)</strong> pour accéder à la plateforme sans mot de passe supplémentaire.</li>
-        <li>Gardez l'onglet Avenir(s) ouvert : nous y retournerons aux étapes 2 et 3.</li>
+        <li>Sélectionnez <strong>« Mes Applis »</strong>
+          <img class="inline-applis" src="assets/etape0/mes-applis.png" alt="Bouton Mes Applis d'École Directe"></li>
+        <li>Cliquez sur le <strong>connecteur Avenir(s)</strong> — accès à la plateforme sans mot de passe supplémentaire. Gardez l'onglet ouvert : on y revient aux étapes 2 et 3.</li>
       </ol>
       <p style="margin-bottom:1rem">
         <button type="button" class="big-check" id="connectedBtn" aria-pressed="false">
@@ -1134,6 +1136,7 @@ body.printing .nav-bottom{display:none!important}
   <div class="card no-print">
     <p class="wall-author" id="wallAuthor" hidden>
       ✍️ Vous publierez en tant que : <strong id="wallAuthorName">—</strong>
+      <span style="display:block;font-size:.85rem;color:var(--ink-soft);margin-top:.15rem">Le niveau est pré-rempli avec le vôtre — changez-le si votre idée concerne un autre niveau.</span>
     </p>
     <form id="wallForm" class="wall-form" novalidate>
       <div class="field" style="margin:0" id="wallPseudoField">
@@ -1141,7 +1144,7 @@ body.printing .nav-bottom{display:none!important}
         <input type="text" id="wallPseudo" maxlength="62" required placeholder="Votre prénom et nom">
       </div>
       <div class="field" style="margin:0" id="wallNiveauField">
-        <label for="wallNiveau">Niveau</label>
+        <label for="wallNiveau">Niveau concerné</label>
         <select id="wallNiveau" required>
           <option value="">—</option>
           <option value="5e">5e</option>
@@ -1483,10 +1486,10 @@ function applyProfileToUI(){
   const name = profileName(state.profile);
   if(profileComplete(state.profile)){
     $("wallPseudo").value = name;
-    $("wallNiveau").value = state.profile.niveau;
-    $("wallPseudoField").hidden = true;
-    $("wallNiveauField").hidden = true;
-    $("wallAuthorName").textContent = name + " · " + state.profile.niveau;
+    $("wallNiveau").value = state.profile.niveau;   // pré-rempli, mais modifiable
+    $("wallPseudoField").hidden = true;             // le nom reste fixe
+    $("wallNiveauField").hidden = false;            // le niveau du post reste choisissable
+    $("wallAuthorName").textContent = name;
     $("wallAuthor").hidden = false;
     if(!$("ficheNiveau").value && state.profile.niveau !== "Autre"){
       $("ficheNiveau").value = state.profile.niveau;
